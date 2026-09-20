@@ -1,0 +1,3346 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<!--
+    QUAN TRỌNG CHO YOUTUBE ERROR 153
+
+    Không chặn HTTP Referer.
+
+    YouTube hiện yêu cầu embedded player
+    phải có Referer hoặc thông tin nhận dạng
+    tương đương.
+-->
+<meta name="referrer"
+      content="strict-origin-when-cross-origin">
+
+<title>NEON BEAT RUSH - YouTube Rhythm</title>
+
+
+<style>
+
+/* =========================================================
+   GIỮ NGUYÊN TOÀN BỘ CSS CỦA BẠN
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #050816;
+    color: white;
+}
+
+
+/* =========================================================
+   HUD
+========================================================= */
+
+#hud {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 76px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 10px 18px;
+
+    background: rgba(5, 8, 22, 0.96);
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+
+    z-index: 1000;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+.hudStats {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+}
+
+.stat {
+    min-width: 85px;
+    text-align: center;
+
+    padding: 7px 12px;
+
+    background: rgba(255,255,255,0.06);
+    border-radius: 10px;
+
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.statTitle {
+    font-size: 10px;
+    opacity: 0.6;
+}
+
+.statValue {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#progressContainer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+}
+
+#progressBar {
+    width: 0%;
+    height: 100%;
+    background: white;
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+#main {
+    position: absolute;
+    top: 76px;
+    left: 0;
+
+    width: 100%;
+    height: calc(100% - 76px);
+
+    display: grid;
+
+    grid-template-columns: 30% 70%;
+}
+
+
+/* =========================================================
+   YOUTUBE LEFT 30%
+========================================================= */
+
+#youtubePanel {
+    position: relative;
+
+    padding: 18px;
+
+    background: #080d20;
+
+    border-right: 1px solid rgba(255,255,255,0.1);
+
+    display: flex;
+    flex-direction: column;
+}
+
+.panelTitle {
+    font-size: 14px;
+    font-weight: bold;
+
+    margin-bottom: 10px;
+}
+
+#youtubeInput {
+    width: 100%;
+
+    padding: 11px 12px;
+
+    border-radius: 8px;
+
+    border: 1px solid rgba(255,255,255,0.15);
+
+    background: rgba(255,255,255,0.07);
+
+    color: white;
+
+    outline: none;
+}
+
+.controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    gap: 8px;
+
+    margin-top: 10px;
+}
+
+.controls button,
+.beatControls button {
+    border: none;
+
+    padding: 10px;
+
+    border-radius: 8px;
+
+    background: #17213f;
+
+    color: white;
+
+    cursor: pointer;
+
+    font-weight: bold;
+}
+
+.controls button:hover,
+.beatControls button:hover {
+    background: #26365f;
+}
+
+#youtubeBox {
+    width: 100%;
+
+    aspect-ratio: 16 / 9;
+
+    margin-top: 14px;
+
+    background: black;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+}
+
+#player {
+    width: 100%;
+    height: 100%;
+}
+
+.settings {
+    margin-top: 14px;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    gap: 10px;
+}
+
+.settingBox {
+    background: rgba(255,255,255,0.05);
+
+    padding: 10px;
+
+    border-radius: 8px;
+}
+
+.settingBox label {
+    display: block;
+
+    font-size: 11px;
+
+    opacity: 0.65;
+
+    margin-bottom: 5px;
+}
+
+.settingBox input,
+.settingBox select {
+    width: 100%;
+
+    padding: 8px;
+
+    border-radius: 6px;
+
+    border: 1px solid rgba(255,255,255,0.15);
+
+    background: #101936;
+
+    color: white;
+}
+
+.beatControls {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 8px;
+
+    margin-top: 10px;
+}
+
+#tapInfo {
+    margin-top: 10px;
+
+    font-size: 11px;
+
+    opacity: 0.7;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   GAME RIGHT 70%
+========================================================= */
+
+#gamePanel {
+    position: relative;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: stretch;
+
+    padding: 18px 25px 22px;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(45,70,150,0.14),
+            transparent 60%
+        );
+}
+
+#playfield {
+    position: relative;
+
+    width: min(760px, 100%);
+
+    height: 100%;
+
+    overflow: hidden;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            to right,
+            rgba(255,255,255,0.035) 1px,
+            transparent 1px
+        );
+
+    background-size: 25% 100%;
+
+    border: 1px solid rgba(255,255,255,0.1);
+
+    box-shadow:
+        0 0 40px rgba(0,0,0,0.4);
+}
+
+
+/* =========================================================
+   LANES
+========================================================= */
+
+.lane {
+    position: absolute;
+
+    top: 0;
+
+    width: 25%;
+
+    height: 100%;
+
+    border-right: 1px solid rgba(255,255,255,0.06);
+
+    pointer-events: none;
+}
+
+.lane:nth-child(1) {
+    left: 0;
+}
+
+.lane:nth-child(2) {
+    left: 25%;
+}
+
+.lane:nth-child(3) {
+    left: 50%;
+}
+
+.lane:nth-child(4) {
+    left: 75%;
+    border-right: none;
+}
+
+
+/* =========================================================
+   HIT LINE
+========================================================= */
+
+#hitLine {
+    position: absolute;
+
+    left: 0;
+
+    bottom: 105px;
+
+    width: 100%;
+
+    height: 3px;
+
+    background: rgba(255,255,255,0.25);
+
+    box-shadow: 0 0 15px rgba(255,255,255,0.3);
+
+    z-index: 10;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   NOTES
+========================================================= */
+
+.note {
+    position: absolute;
+
+    width: 56px;
+
+    height: 56px;
+
+    border-radius: 50%;
+
+    transform: translateX(-50%);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-weight: 900;
+
+    font-size: 18px;
+
+    z-index: 20;
+
+    pointer-events: none;
+
+    box-shadow:
+        0 0 12px rgba(255,255,255,0.4),
+        inset 0 0 12px rgba(255,255,255,0.15);
+
+    transition:
+        transform 0.08s,
+        opacity 0.08s;
+}
+
+.note.hit {
+    transform: translateX(-50%) scale(1.55);
+    opacity: 0;
+}
+
+.note.miss {
+    opacity: 0;
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+#buttons {
+    position: absolute;
+
+    bottom: 25px;
+
+    left: 0;
+
+    width: 100%;
+
+    height: 70px;
+
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    z-index: 30;
+
+    padding: 0 8px;
+
+    gap: 8px;
+}
+
+.keyButton {
+    position: relative;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.12),
+            rgba(255,255,255,0.04)
+        );
+
+    border: 2px solid rgba(255,255,255,0.18);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 22px;
+
+    font-weight: 900;
+
+    user-select: none;
+
+    transition:
+        transform 0.06s,
+        background 0.06s,
+        box-shadow 0.06s;
+}
+
+.keyButton.active {
+    transform: scale(0.94);
+
+    background: rgba(255,255,255,0.25);
+
+    box-shadow:
+        0 0 25px rgba(255,255,255,0.4);
+}
+
+
+/* =========================================================
+   COMBO TEXT
+========================================================= */
+
+#judgement {
+    position: absolute;
+
+    left: 50%;
+
+    top: 40%;
+
+    transform: translate(-50%, -50%);
+
+    font-size: 34px;
+
+    font-weight: 900;
+
+    letter-spacing: 2px;
+
+    opacity: 0;
+
+    z-index: 100;
+
+    pointer-events: none;
+}
+
+#judgement.show {
+    animation: judgeAnim 0.5s ease-out;
+}
+
+@keyframes judgeAnim {
+
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.7);
+    }
+
+    25% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.15);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -65%) scale(1);
+    }
+}
+
+
+/* =========================================================
+   START OVERLAY
+========================================================= */
+
+#overlay {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 500;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: rgba(2,5,15,0.75);
+
+    backdrop-filter: blur(5px);
+}
+
+#startButton {
+    padding: 18px 40px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: white;
+
+    color: black;
+
+    font-size: 18px;
+
+    font-weight: 900;
+
+    cursor: pointer;
+}
+
+#startButton:hover {
+    transform: scale(1.04);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+
+    html,
+    body {
+        overflow: auto;
+    }
+
+    #hud {
+        position: relative;
+        height: auto;
+
+        flex-wrap: wrap;
+
+        gap: 8px;
+    }
+
+    #main {
+        position: relative;
+
+        top: 0;
+
+        height: auto;
+
+        grid-template-columns: 1fr;
+    }
+
+    #youtubePanel {
+        border-right: none;
+
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    #gamePanel {
+        min-height: 650px;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .hudStats {
+        gap: 5px;
+    }
+
+    .stat {
+        min-width: 65px;
+        padding: 5px;
+    }
+
+    .statValue {
+        font-size: 14px;
+    }
+
+    #gamePanel {
+        padding: 10px;
+    }
+
+    .note {
+        width: 48px;
+        height: 48px;
+    }
+
+    .keyButton {
+        font-size: 18px;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HUD
+===================================================== -->
+
+<div id="hud">
+
+    <div class="logo">
+        NEON BEAT RUSH
+    </div>
+
+    <div class="hudStats">
+
+        <div class="stat">
+            <div class="statTitle">SCORE</div>
+            <div class="statValue" id="score">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="statTitle">COMBO</div>
+            <div class="statValue" id="combo">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="statTitle">ACCURACY</div>
+            <div class="statValue" id="accuracy">100%</div>
+        </div>
+
+        <div class="stat">
+            <div class="statTitle">BPM</div>
+            <div class="statValue" id="bpmDisplay">120</div>
+        </div>
+
+    </div>
+
+    <div id="progressContainer">
+
+        <div id="progressBar"></div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<div id="main">
+
+
+    <!-- =================================================
+         YOUTUBE
+    ================================================== -->
+
+    <section id="youtubePanel">
+
+        <div class="panelTitle">
+            YOUTUBE MUSIC
+        </div>
+
+
+        <input
+            id="youtubeInput"
+            type="text"
+            placeholder="Dán link YouTube vào đây..."
+        >
+
+
+        <div class="controls">
+
+            <button id="loadVideo">
+                LOAD VIDEO
+            </button>
+
+            <button id="playVideo">
+                PLAY
+            </button>
+
+        </div>
+
+
+        <div id="youtubeBox">
+
+            <div id="player"></div>
+
+        </div>
+
+
+        <!-- SETTINGS -->
+
+        <div class="settings">
+
+
+            <div class="settingBox">
+
+                <label>
+                    BPM
+                </label>
+
+                <input
+                    id="bpmInput"
+                    type="number"
+                    min="30"
+                    max="300"
+                    value="120"
+                >
+
+            </div>
+
+
+            <div class="settingBox">
+
+                <label>
+                    OFFSET (ms)
+                </label>
+
+                <input
+                    id="offsetInput"
+                    type="number"
+                    value="0"
+                >
+
+            </div>
+
+
+            <div class="settingBox">
+
+                <label>
+                    SUBDIVISION
+                </label>
+
+                <select id="subdivision">
+
+                    <option value="1">
+                        1/4 Beat
+                    </option>
+
+                    <option value="2">
+                        1/8 Beat
+                    </option>
+
+                    <option value="4">
+                        1/16 Beat
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="settingBox">
+
+                <label>
+                    SPEED
+                </label>
+
+                <select id="visualSpeed">
+
+                    <option value="0.5">
+                        0.5 sec
+                    </option>
+
+                    <option value="0.7" selected>
+                        0.7 sec
+                    </option>
+
+                    <option value="2">
+                        2.0 sec
+                    </option>
+
+                    <option value="3">
+                        3.0 sec
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <div class="beatControls">
+
+            <button id="tapBpm">
+                TAP BPM
+            </button>
+
+            <button id="resetBpm">
+                RESET TAP
+            </button>
+
+        </div>
+
+
+        <div id="tapInfo">
+
+            BPM dùng để tạo beat tự động.
+            Nếu nốt bị sớm/muộn, chỉnh OFFSET.
+
+            <br><br>
+
+            Phím: <b>D F J K</b>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         GAME
+    ================================================== -->
+
+    <section id="gamePanel">
+
+        <div id="playfield">
+
+
+            <!-- LANES -->
+
+            <div class="lane"></div>
+
+            <div class="lane"></div>
+
+            <div class="lane"></div>
+
+            <div class="lane"></div>
+
+
+            <!-- HIT LINE -->
+
+            <div id="hitLine"></div>
+
+
+            <!-- JUDGEMENT -->
+
+            <div id="judgement">
+                PERFECT
+            </div>
+
+
+            <!-- BUTTONS -->
+
+            <div id="buttons">
+
+                <div
+                    class="keyButton"
+                    data-lane="0"
+                >
+                    D
+                </div>
+
+                <div
+                    class="keyButton"
+                    data-lane="1"
+                >
+                    F
+                </div>
+
+                <div
+                    class="keyButton"
+                    data-lane="2"
+                >
+                    J
+                </div>
+
+                <div
+                    class="keyButton"
+                    data-lane="3"
+                >
+                    K
+                </div>
+
+            </div>
+
+
+            <!-- START -->
+
+            <div id="overlay">
+
+                <button id="startButton">
+                    START RHYTHM
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<!-- =====================================================
+     YOUTUBE IFRAME API
+===================================================== -->
+
+<script src="https://www.youtube.com/iframe_api"></script>
+
+
+<script>
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+let player = null;
+
+let playerReady = false;
+
+let videoLoaded = false;
+
+let gameStarted = false;
+
+let animationFrame = null;
+
+let lastVideoTime = 0;
+
+let notes = [];
+
+let score = 0;
+
+let combo = 0;
+
+let perfect = 0;
+
+let good = 0;
+
+let miss = 0;
+
+let tapTimes = [];
+
+
+const keys = [
+    "d",
+    "f",
+    "j",
+    "k"
+];
+
+
+let approachTime = 2;
+
+
+/* =========================================================
+   KIỂM TRA MÔI TRƯỜNG
+========================================================= */
+
+function isLocalFile() {
+
+    return (
+        window.location.protocol ===
+        "file:"
+    );
+
+}
+
+
+function isValidWebOrigin() {
+
+    return (
+        window.location.protocol ===
+        "http:" ||
+
+        window.location.protocol ===
+        "https:"
+    );
+
+}
+
+
+/* =========================================================
+   GET YOUTUBE ID
+========================================================= */
+
+function getYouTubeID(url) {
+
+    try {
+
+        const parsed =
+            new URL(url);
+
+
+        const hostname =
+            parsed.hostname
+                .toLowerCase()
+                .replace(
+                    "www.",
+                    ""
+                );
+
+
+        /*
+            youtube.com/watch?v=ID
+        */
+
+        if (
+            hostname ===
+            "youtube.com"
+        ) {
+
+            const videoID =
+                parsed.searchParams.get(
+                    "v"
+                );
+
+
+            if (
+                videoID
+            ) {
+
+                return videoID;
+
+            }
+
+
+            /*
+                /shorts/ID
+                /embed/ID
+            */
+
+            const parts =
+                parsed.pathname
+                    .split("/")
+                    .filter(
+                        Boolean
+                    );
+
+
+            if (
+                (
+                    parts[0] ===
+                    "shorts" ||
+
+                    parts[0] ===
+                    "embed"
+                ) &&
+                parts[1]
+            ) {
+
+                return parts[1];
+
+            }
+
+        }
+
+
+        /*
+            youtu.be/ID
+        */
+
+        if (
+            hostname ===
+            "youtu.be"
+        ) {
+
+            const id =
+                parsed.pathname
+                    .split("/")
+                    .filter(
+                        Boolean
+                    )[0];
+
+
+            if (id) {
+
+                return id;
+
+            }
+
+        }
+
+    }
+    catch (error) {
+
+        console.error(
+            "YouTube URL error:",
+            error
+        );
+
+    }
+
+
+    return null;
+
+}
+
+
+/* =========================================================
+   YOUTUBE API
+========================================================= */
+
+/*
+    QUAN TRỌNG:
+
+    Code cũ:
+
+        videoId: ""
+
+    đã được bỏ.
+
+    YouTube API cần player được tạo đúng cách.
+*/
+
+
+function onYouTubeIframeAPIReady() {
+
+    console.log(
+        "YouTube IFrame API đã tải."
+    );
+
+
+    /*
+        Nếu người dùng mở trực tiếp
+        file:///...html
+
+        thì browser không cung cấp HTTP Referer
+        như một website bình thường.
+
+        Đây là nguyên nhân chính của ERROR 153.
+    */
+
+    if (
+        isLocalFile()
+    ) {
+
+        console.warn(
+            "Đang chạy bằng file://. " +
+            "Hãy chạy bằng Live Server/localhost " +
+            "để YouTube nhận được Referer."
+        );
+
+    }
+
+
+    /*
+        YouTube yêu cầu videoId hợp lệ
+        trong cấu hình player.
+
+        Dùng video demo chính thức của
+        Google để khởi tạo player.
+
+        Video thật sẽ được thay bằng
+        loadVideoById() sau khi người dùng
+        nhập link.
+    */
+
+    player =
+        new YT.Player(
+            "player",
+            {
+
+                /*
+                    KHÔNG để:
+
+                        videoId: ""
+
+                    nữa.
+                */
+
+                videoId:
+                    "M7lc1UVf-VE",
+
+
+                width:
+                    "100%",
+
+
+                height:
+                    "100%",
+
+
+                playerVars: {
+
+                    autoplay: 0,
+
+                    controls: 1,
+
+                    rel: 0,
+
+                    playsinline: 1,
+
+                    enablejsapi: 1,
+
+                    /*
+                        origin chỉ được truyền
+                        khi trang có origin HTTP/HTTPS.
+                    */
+
+                    ...(isValidWebOrigin()
+                        ? {
+                            origin:
+                                window.location.origin
+                        }
+                        : {})
+
+                },
+
+
+                events: {
+
+                    /* =====================
+                       READY
+                    ====================== */
+
+                    onReady:
+                    function(event) {
+
+                        playerReady =
+                            true;
+
+
+                        console.log(
+                            "YouTube Player READY"
+                        );
+
+
+                        /*
+                            Không tự động phát.
+                        */
+
+                    },
+
+
+                    /* =====================
+                       STATE
+                    ====================== */
+
+                    onStateChange:
+                    function(event) {
+
+                        /*
+                            QUAN TRỌNG:
+
+                            Không gọi startGame()
+                            ở đây nữa.
+
+                            Code cũ gọi:
+
+                                if PLAYING
+                                    startGame();
+
+                            Điều này làm game tự chạy
+                            khi chỉ bấm PLAY.
+                        */
+
+
+                        if (
+                            event.data ===
+                            YT.PlayerState.PLAYING
+                        ) {
+
+                            console.log(
+                                "YouTube đang phát."
+                            );
+
+                        }
+
+
+                        /*
+                            Video kết thúc.
+                        */
+
+                        if (
+                            event.data ===
+                            YT.PlayerState.ENDED
+                        ) {
+
+                            gameStarted =
+                                false;
+
+
+                            if (
+                                animationFrame
+                            ) {
+
+                                cancelAnimationFrame(
+                                    animationFrame
+                                );
+
+                                animationFrame =
+                                    null;
+
+                            }
+
+                        }
+
+                    },
+
+
+                    /* =====================
+                       ERROR
+                    ====================== */
+
+                    onError:
+                    function(event) {
+
+                        console.error(
+                            "YouTube Player Error:",
+                            event.data
+                        );
+
+
+                        let message = "";
+
+
+                        switch (
+                            event.data
+                        ) {
+
+
+                            case 2:
+
+                                message =
+                                    "Lỗi 2: Video ID không hợp lệ.";
+
+                                break;
+
+
+                            case 5:
+
+                                message =
+                                    "Lỗi 5: Video không thể phát bằng HTML5 Player.";
+
+                                break;
+
+
+                            case 100:
+
+                                message =
+                                    "Lỗi 100: Video không tồn tại hoặc đã bị xóa/private.";
+
+                                break;
+
+
+                            case 101:
+
+                            case 150:
+
+                                message =
+                                    "Lỗi " +
+                                    event.data +
+                                    ": Video này không cho phép nhúng trên website.";
+
+                                break;
+
+
+                            case 153:
+
+                                message =
+                                    "Lỗi 153: YouTube không nhận được HTTP Referer.\n\n" +
+
+                                    "Nếu bạn đang mở file bằng file:///...\n" +
+
+                                    "hãy chạy bằng VS Code + Live Server.\n\n" +
+
+                                    "Ví dụ:\n" +
+
+                                    "http://127.0.0.1:5500/ten-file.html";
+
+                                break;
+
+
+                            default:
+
+                                message =
+                                    "YouTube Player gặp lỗi: " +
+                                    event.data;
+
+                        }
+
+
+                        alert(
+                            message
+                        );
+
+                    },
+
+
+                    /* =====================
+                       AUTOPLAY BLOCKED
+                    ====================== */
+
+                    onAutoplayBlocked:
+                    function() {
+
+                        console.warn(
+                            "YouTube đã chặn autoplay."
+                        );
+
+                    }
+
+                }
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   LOAD VIDEO
+========================================================= */
+
+document
+.getElementById(
+    "loadVideo"
+)
+.addEventListener(
+    "click",
+    function () {
+
+
+        /*
+            Nếu đang mở file trực tiếp
+            thì cảnh báo trước.
+        */
+
+        if (
+            isLocalFile()
+        ) {
+
+            alert(
+                "Bạn đang mở file HTML trực tiếp bằng file://.\n\n" +
+
+                "Để tránh YouTube Error 153, hãy chạy file bằng:\n\n" +
+
+                "VS Code → Live Server\n\n" +
+
+                "Sau đó mở dạng:\n" +
+
+                "http://127.0.0.1:5500/ten-file.html"
+            );
+
+
+            return;
+
+        }
+
+
+        const url =
+            document
+            .getElementById(
+                "youtubeInput"
+            )
+            .value
+            .trim();
+
+
+        const id =
+            getYouTubeID(
+                url
+            );
+
+
+        if (
+            !id
+        ) {
+
+            alert(
+                "Link YouTube không hợp lệ!\n\n" +
+
+                "Ví dụ:\n" +
+
+                "https://www.youtube.com/watch?v=VIDEO_ID"
+            );
+
+
+            return;
+
+        }
+
+
+        if (
+            !playerReady ||
+            !player
+        ) {
+
+            alert(
+                "YouTube Player chưa sẵn sàng.\n\n" +
+
+                "Hãy chờ vài giây rồi thử lại."
+            );
+
+
+            return;
+
+        }
+
+
+        console.log(
+            "Đang load video:",
+            id
+        );
+
+
+        /*
+            Dừng game cũ.
+        */
+
+        resetGame();
+
+
+        /*
+            Load video bằng Video ID.
+
+            Không tạo YT.Player mới.
+        */
+
+        try {
+
+            player.loadVideoById({
+                videoId: id,
+                startSeconds: 0
+            });
+
+            videoLoaded =
+                true;
+
+        }
+        catch (error) {
+
+            console.error(
+                "loadVideoById error:",
+                error
+            );
+
+
+            alert(
+                "Không thể tải video YouTube."
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   PLAY
+========================================================= */
+
+document
+.getElementById(
+    "playVideo"
+)
+.addEventListener(
+    "click",
+    function () {
+
+
+        if (
+            !playerReady ||
+            !player
+        ) {
+
+            alert(
+                "YouTube Player chưa sẵn sàng."
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !videoLoaded
+        ) {
+
+            alert(
+                "Hãy LOAD VIDEO trước."
+            );
+
+            return;
+
+        }
+
+
+        /*
+            PLAY chỉ phát video.
+
+            Không tự start game.
+        */
+
+        try {
+
+            player.playVideo();
+
+        }
+        catch (error) {
+
+            console.error(
+                error
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   START GAME
+========================================================= */
+
+document
+.getElementById(
+    "startButton"
+)
+.addEventListener(
+    "click",
+    function () {
+
+
+        if (
+            isLocalFile()
+        ) {
+
+            alert(
+                "Bạn đang mở file bằng file://.\n\n" +
+
+                "YouTube Error 153 có thể xảy ra.\n\n" +
+
+                "Hãy chạy bằng Live Server trước."
+            );
+
+
+            return;
+
+        }
+
+
+        if (
+            !playerReady ||
+            !player
+        ) {
+
+            alert(
+                "YouTube Player chưa sẵn sàng."
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !videoLoaded
+        ) {
+
+            alert(
+                "Hãy nhập link YouTube và bấm LOAD VIDEO trước."
+            );
+
+            return;
+
+        }
+
+
+        let duration =
+            0;
+
+
+        try {
+
+            duration =
+                player.getDuration();
+
+        }
+        catch (error) {
+
+            console.error(
+                error
+            );
+
+        }
+
+
+        /*
+            YouTube có thể trả duration = 0
+            khi metadata chưa tải xong.
+        */
+
+        if (
+            !duration ||
+            duration <= 0
+        ) {
+
+            alert(
+                "Video chưa tải xong.\n\n" +
+
+                "Hãy chờ video xuất hiện đầy đủ " +
+
+                "rồi bấm START RHYTHM lại."
+            );
+
+
+            return;
+
+        }
+
+
+        gameStarted =
+            true;
+
+
+        document
+        .getElementById(
+            "overlay"
+        )
+        .style.display =
+            "none";
+
+
+        /*
+            startGame() tạo note.
+
+            Sau đó mới phát video.
+        */
+
+        startGame();
+
+
+        try {
+
+            player.playVideo();
+
+        }
+        catch (error) {
+
+            console.error(
+                error
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   BPM
+========================================================= */
+
+const bpmInput =
+    document.getElementById(
+        "bpmInput"
+    );
+
+
+const bpmDisplay =
+    document.getElementById(
+        "bpmDisplay"
+    );
+
+
+function getBPM() {
+
+    let bpm =
+        parseFloat(
+            bpmInput.value
+        );
+
+
+    if (
+        !isFinite(bpm)
+    ) {
+
+        bpm =
+            120;
+
+    }
+
+
+    bpm =
+        Math.max(
+            30,
+            Math.min(
+                300,
+                bpm
+            )
+        );
+
+
+    return bpm;
+
+}
+
+
+bpmInput.addEventListener(
+    "input",
+    function () {
+
+        bpmDisplay.textContent =
+            getBPM();
+
+    }
+);
+
+
+/* =========================================================
+   OFFSET
+========================================================= */
+
+function getOffsetSeconds() {
+
+    const ms =
+        parseFloat(
+            document
+            .getElementById(
+                "offsetInput"
+            )
+            .value
+        ) || 0;
+
+
+    return ms / 1000;
+
+}
+
+
+/* =========================================================
+   SUBDIVISION
+========================================================= */
+
+function getSubdivision() {
+
+    return parseInt(
+        document
+        .getElementById(
+            "subdivision"
+        )
+        .value
+    );
+
+}
+
+
+/* =========================================================
+   VISUAL SPEED
+========================================================= */
+
+document
+.getElementById(
+    "visualSpeed"
+)
+.addEventListener(
+    "change",
+    function () {
+
+        approachTime =
+            parseFloat(
+                this.value
+            );
+
+    }
+);
+
+
+/* =========================================================
+   GENERATE NOTES
+========================================================= */
+
+function generateNotes(
+    startTime,
+    duration
+) {
+
+    notes =
+        [];
+
+
+    const bpm =
+        getBPM();
+
+
+    const subdivision =
+        getSubdivision();
+
+
+    const beatDuration =
+        60 / bpm;
+
+
+    const step =
+        beatDuration /
+        subdivision;
+
+
+    const offset =
+        getOffsetSeconds();
+
+
+    for (
+        let t = startTime;
+        t < duration;
+        t += step
+    ) {
+
+
+        const hitTime =
+            t +
+            offset;
+
+
+        if (
+            hitTime < 0
+        ) {
+
+            continue;
+
+        }
+
+
+        let lane =
+            Math.floor(
+                Math.random() *
+                4
+            );
+
+
+        if (
+            notes.length > 0 &&
+            notes[
+                notes.length - 1
+            ].lane === lane
+        ) {
+
+            lane =
+                (lane + 1) % 4;
+
+        }
+
+
+        notes.push({
+
+            hitTime:
+                hitTime,
+
+            lane:
+                lane,
+
+            spawned:
+                false,
+
+            hit:
+                false,
+
+            missed:
+                false,
+
+            element:
+                null
+
+        });
+
+    }
+
+}
+
+
+/* =========================================================
+   CREATE NOTE
+========================================================= */
+
+function createNoteElement(
+    note
+) {
+
+    const el =
+        document.createElement(
+            "div"
+        );
+
+
+    el.className =
+        "note";
+
+
+    el.textContent =
+        keys[
+            note.lane
+        ].toUpperCase();
+
+
+    const x =
+        (
+            note.lane *
+            25
+        ) +
+        12.5;
+
+
+    el.style.left =
+        x + "%";
+
+
+    document
+    .getElementById(
+        "playfield"
+    )
+    .appendChild(
+        el
+    );
+
+
+    note.element =
+        el;
+
+}
+
+
+/* =========================================================
+   UPDATE NOTES
+========================================================= */
+
+function updateNotes(
+    currentTime
+) {
+
+    const playfield =
+        document.getElementById(
+            "playfield"
+        );
+
+
+    const height =
+        playfield.clientHeight;
+
+
+    const hitLineY =
+        height -
+        105;
+
+
+    const spawnWindow =
+        approachTime;
+
+
+    for (
+        let i = 0;
+        i < notes.length;
+        i++
+    ) {
+
+
+        const note =
+            notes[i];
+
+
+        if (
+            note.hit ||
+            note.missed
+        ) {
+
+            continue;
+
+        }
+
+
+        const timeUntilHit =
+            note.hitTime -
+            currentTime;
+
+
+        /* SPAWN */
+
+        if (
+            !note.spawned &&
+            timeUntilHit <=
+            spawnWindow &&
+            timeUntilHit >=
+            -0.13
+        ) {
+
+            note.spawned =
+                true;
+
+
+            createNoteElement(
+                note
+            );
+
+        }
+
+
+        if (
+            !note.spawned ||
+            !note.element
+        ) {
+
+            continue;
+
+        }
+
+
+        const progress =
+            1 -
+            (
+                timeUntilHit /
+                spawnWindow
+            );
+
+
+        const startY =
+            -70;
+
+
+        const targetY =
+            hitLineY;
+
+
+        const y =
+            startY +
+            (
+                targetY -
+                startY
+            ) *
+            progress;
+
+
+        note.element.style.top =
+            y + "px";
+
+
+        if (
+            timeUntilHit <
+            -0.13
+        ) {
+
+            missNote(
+                note
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   HIT LANE
+========================================================= */
+
+function hitLane(
+    lane
+) {
+
+    if (
+        !gameStarted
+    ) {
+
+        return;
+
+    }
+
+
+    const currentTime =
+        getCurrentTime();
+
+
+    let bestNote =
+        null;
+
+
+    let bestDistance =
+        Infinity;
+
+
+    for (
+        let i = 0;
+        i < notes.length;
+        i++
+    ) {
+
+
+        const note =
+            notes[i];
+
+
+        if (
+            note.lane !== lane ||
+            note.hit ||
+            note.missed ||
+            !note.spawned
+        ) {
+
+            continue;
+
+        }
+
+
+        const distance =
+            Math.abs(
+                note.hitTime -
+                currentTime
+            );
+
+
+        if (
+            distance <
+            bestDistance
+        ) {
+
+            bestDistance =
+                distance;
+
+
+            bestNote =
+                note;
+
+        }
+
+    }
+
+
+    if (
+        !bestNote
+    ) {
+
+        showJudgement(
+            "MISS"
+        );
+
+
+        combo =
+            0;
+
+
+        updateHUD();
+
+
+        return;
+
+    }
+
+
+    const perfectWindow =
+        0.06;
+
+
+    const goodWindow =
+        0.13;
+
+
+    if (
+        bestDistance <=
+        perfectWindow
+    ) {
+
+        hitNote(
+            bestNote,
+            "PERFECT",
+            100
+        );
+
+    }
+
+    else if (
+        bestDistance <=
+        goodWindow
+    ) {
+
+        hitNote(
+            bestNote,
+            "GOOD",
+            60
+        );
+
+    }
+
+    else {
+
+        combo =
+            0;
+
+
+        showJudgement(
+            "MISS"
+        );
+
+
+        miss++;
+
+
+        updateHUD();
+
+    }
+
+}
+
+
+/* =========================================================
+   HIT NOTE
+========================================================= */
+
+function hitNote(
+    note,
+    judgement,
+    points
+) {
+
+    note.hit =
+        true;
+
+
+    combo++;
+
+
+    score +=
+        points *
+        Math.max(
+            1,
+            Math.floor(
+                combo / 10
+            )
+        );
+
+
+    if (
+        judgement ===
+        "PERFECT"
+    ) {
+
+        perfect++;
+
+    }
+
+    else {
+
+        good++;
+
+    }
+
+
+    if (
+        note.element
+    ) {
+
+        note.element.classList.add(
+            "hit"
+        );
+
+
+        const element =
+            note.element;
+
+
+        setTimeout(
+            function () {
+
+                if (
+                    element &&
+                    element.parentNode
+                ) {
+
+                    element
+                    .parentNode
+                    .removeChild(
+                        element
+                    );
+
+                }
+
+            },
+            100
+        );
+
+
+        note.element =
+            null;
+
+    }
+
+
+    showJudgement(
+        judgement
+    );
+
+
+    updateHUD();
+
+}
+
+
+/* =========================================================
+   MISS NOTE
+========================================================= */
+
+function missNote(
+    note
+) {
+
+    if (
+        note.missed ||
+        note.hit
+    ) {
+
+        return;
+
+    }
+
+
+    note.missed =
+        true;
+
+
+    miss++;
+
+
+    combo =
+        0;
+
+
+    if (
+        note.element
+    ) {
+
+        const element =
+            note.element;
+
+
+        element.classList.add(
+            "miss"
+        );
+
+
+        setTimeout(
+            function () {
+
+                if (
+                    element &&
+                    element.parentNode
+                ) {
+
+                    element
+                    .parentNode
+                    .removeChild(
+                        element
+                    );
+
+                }
+
+            },
+            100
+        );
+
+
+        note.element =
+            null;
+
+    }
+
+
+    showJudgement(
+        "MISS"
+    );
+
+
+    updateHUD();
+
+}
+
+
+/* =========================================================
+   JUDGEMENT
+========================================================= */
+
+function showJudgement(
+    text
+) {
+
+    const el =
+        document.getElementById(
+            "judgement"
+        );
+
+
+    el.textContent =
+        text;
+
+
+    el.classList.remove(
+        "show"
+    );
+
+
+    void el.offsetWidth;
+
+
+    el.classList.add(
+        "show"
+    );
+
+}
+
+
+/* =========================================================
+   CURRENT YOUTUBE TIME
+========================================================= */
+
+function getCurrentTime() {
+
+    if (
+        !playerReady ||
+        !player ||
+        typeof
+        player.getCurrentTime !==
+        "function"
+    ) {
+
+        return 0;
+
+    }
+
+
+    try {
+
+        return player.getCurrentTime();
+
+    }
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+        return 0;
+
+    }
+
+}
+
+
+/* =========================================================
+   MAIN LOOP
+========================================================= */
+
+function startLoop() {
+
+    if (
+        animationFrame
+    ) {
+
+        cancelAnimationFrame(
+            animationFrame
+        );
+
+    }
+
+
+    function loop() {
+
+        if (
+            !gameStarted
+        ) {
+
+            return;
+
+        }
+
+
+        const currentTime =
+            getCurrentTime();
+
+
+        /*
+            Nếu video bị tua ngược.
+        */
+
+        if (
+            currentTime <
+            lastVideoTime -
+            0.5
+        ) {
+
+            resetNotesAround(
+                currentTime
+            );
+
+        }
+
+
+        lastVideoTime =
+            currentTime;
+
+
+        updateNotes(
+            currentTime
+        );
+
+
+        updateProgress(
+            currentTime
+        );
+
+
+        animationFrame =
+            requestAnimationFrame(
+                loop
+            );
+
+    }
+
+
+    loop();
+
+}
+
+
+/* =========================================================
+   RESET NOTES AROUND
+========================================================= */
+
+function resetNotesAround(
+    currentTime
+) {
+
+    for (
+        let i = 0;
+        i < notes.length;
+        i++
+    ) {
+
+
+        const note =
+            notes[i];
+
+
+        if (
+            note.hitTime >
+            currentTime
+        ) {
+
+            note.spawned =
+                false;
+
+
+            note.hit =
+                false;
+
+
+            note.missed =
+                false;
+
+
+            if (
+                note.element &&
+                note.element.parentNode
+            ) {
+
+                note.element
+                    .parentNode
+                    .removeChild(
+                        note.element
+                    );
+
+            }
+
+
+            note.element =
+                null;
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+function updateProgress(
+    currentTime
+) {
+
+    if (
+        !player ||
+        typeof
+        player.getDuration !==
+        "function"
+    ) {
+
+        return;
+
+    }
+
+
+    let duration =
+        0;
+
+
+    try {
+
+        duration =
+            player.getDuration();
+
+    }
+    catch (error) {
+
+        return;
+
+    }
+
+
+    if (
+        !duration ||
+        duration <= 0
+    ) {
+
+        return;
+
+    }
+
+
+    const percent =
+        (
+            currentTime /
+            duration
+        ) *
+        100;
+
+
+    document
+    .getElementById(
+        "progressBar"
+    )
+    .style.width =
+        Math.min(
+            100,
+            percent
+        ) + "%";
+
+}
+
+
+/* =========================================================
+   KEYBOARD
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    function (
+        event
+    ) {
+
+        const key =
+            event.key.toLowerCase();
+
+
+        const lane =
+            keys.indexOf(
+                key
+            );
+
+
+        if (
+            lane === -1
+        ) {
+
+            return;
+
+        }
+
+
+        event.preventDefault();
+
+
+        activateButton(
+            lane
+        );
+
+
+        hitLane(
+            lane
+        );
+
+    }
+);
+
+
+/* =========================================================
+   BUTTON CLICK
+========================================================= */
+
+document
+.querySelectorAll(
+    ".keyButton"
+)
+.forEach(
+    function (
+        button
+    ) {
+
+        button.addEventListener(
+            "mousedown",
+            function () {
+
+                const lane =
+                    parseInt(
+                        this.dataset.lane
+                    );
+
+
+                activateButton(
+                    lane
+                );
+
+
+                hitLane(
+                    lane
+                );
+
+            }
+        );
+
+    }
+);
+
+
+/* =========================================================
+   BUTTON ANIMATION
+========================================================= */
+
+function activateButton(
+    lane
+) {
+
+    const buttons =
+        document.querySelectorAll(
+            ".keyButton"
+        );
+
+
+    const button =
+        buttons[lane];
+
+
+    if (
+        !button
+    ) {
+
+        return;
+
+    }
+
+
+    button.classList.add(
+        "active"
+    );
+
+
+    setTimeout(
+        function () {
+
+            button.classList.remove(
+                "active"
+            );
+
+        },
+        80
+    );
+
+}
+
+
+/* =========================================================
+   HUD
+========================================================= */
+
+function updateHUD() {
+
+    document
+    .getElementById(
+        "score"
+    )
+    .textContent =
+        score;
+
+
+    document
+    .getElementById(
+        "combo"
+    )
+    .textContent =
+        combo;
+
+
+    const total =
+        perfect +
+        good +
+        miss;
+
+
+    let acc =
+        100;
+
+
+    if (
+        total > 0
+    ) {
+
+        acc =
+            (
+                (
+                    perfect +
+                    good * 0.6
+                ) /
+                total
+            ) *
+            100;
+
+    }
+
+
+    document
+    .getElementById(
+        "accuracy"
+    )
+    .textContent =
+        acc.toFixed(
+            1
+        ) + "%";
+
+
+    document
+    .getElementById(
+        "bpmDisplay"
+    )
+    .textContent =
+        getBPM();
+
+}
+
+
+/* =========================================================
+   TAP BPM
+========================================================= */
+
+document
+.getElementById(
+    "tapBpm"
+)
+.addEventListener(
+    "click",
+    function () {
+
+        const now =
+            performance.now();
+
+
+        tapTimes.push(
+            now
+        );
+
+
+        if (
+            tapTimes.length >
+            8
+        ) {
+
+            tapTimes.shift();
+
+        }
+
+
+        if (
+            tapTimes.length >=
+            2
+        ) {
+
+            let total =
+                0;
+
+
+            let count =
+                0;
+
+
+            for (
+                let i = 1;
+                i < tapTimes.length;
+                i++
+            ) {
+
+                const interval =
+                    tapTimes[i] -
+                    tapTimes[i - 1];
+
+
+                if (
+                    interval >= 250 &&
+                    interval <= 2000
+                ) {
+
+                    total +=
+                        interval;
+
+
+                    count++;
+
+                }
+
+            }
+
+
+            if (
+                count > 0
+            ) {
+
+                const average =
+                    total /
+                    count;
+
+
+                let bpm =
+                    60000 /
+                    average;
+
+
+                while (
+                    bpm < 60
+                ) {
+
+                    bpm *= 2;
+
+                }
+
+
+                while (
+                    bpm > 200
+                ) {
+
+                    bpm /= 2;
+
+                }
+
+
+                bpmInput.value =
+                    bpm.toFixed(
+                        1
+                    );
+
+
+                bpmDisplay.textContent =
+                    bpm.toFixed(
+                        1
+                    );
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   RESET TAP
+========================================================= */
+
+document
+.getElementById(
+    "resetBpm"
+)
+.addEventListener(
+    "click",
+    function () {
+
+        tapTimes =
+            [];
+
+    }
+);
+
+
+/* =========================================================
+   RESET GAME
+========================================================= */
+
+function resetGame() {
+
+    gameStarted =
+        false;
+
+
+    score =
+        0;
+
+
+    combo =
+        0;
+
+
+    perfect =
+        0;
+
+
+    good =
+        0;
+
+
+    miss =
+        0;
+
+
+    notes =
+        [];
+
+
+    lastVideoTime =
+        0;
+
+
+    /*
+        Hủy animation frame cũ.
+    */
+
+    if (
+        animationFrame
+    ) {
+
+        cancelAnimationFrame(
+            animationFrame
+        );
+
+
+        animationFrame =
+            null;
+
+    }
+
+
+    document
+    .querySelectorAll(
+        ".note"
+    )
+    .forEach(
+        function (
+            el
+        ) {
+
+            el.remove();
+
+        }
+    );
+
+
+    document
+    .getElementById(
+        "overlay"
+    )
+    .style.display =
+        "flex";
+
+
+    document
+    .getElementById(
+        "progressBar"
+    )
+    .style.width =
+        "0%";
+
+
+    updateHUD();
+
+}
+
+
+/* =========================================================
+   START GAME
+========================================================= */
+
+function startGame() {
+
+    if (
+        !playerReady ||
+        !player
+    ) {
+
+        return;
+
+    }
+
+
+    let duration =
+        0;
+
+
+    let currentTime =
+        0;
+
+
+    try {
+
+        duration =
+            player.getDuration();
+
+
+        currentTime =
+            player.getCurrentTime();
+
+    }
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        return;
+
+    }
+
+
+    if (
+        !duration ||
+        duration <= 0
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+        Tạo beat cho toàn bộ video.
+    */
+
+    generateNotes(
+        currentTime,
+        duration
+    );
+
+
+    lastVideoTime =
+        currentTime;
+
+
+    startLoop();
+
+}
+
+
+/* =========================================================
+   INITIAL HUD
+========================================================= */
+
+updateHUD();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2023 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Đua Thuyền</title>
+
+    <style>
+
+        @font-face {
+            font-family: "KiwiSoda";
+            src: url("fonts/KIWISODA.woff2") format("woff2");
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        /* =====================================================
+           RESET
+        ===================================================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+
+        /* =====================================================
+           BODY
+        ===================================================== */
+
+        body {
+
+            background: #253525;
+
+            font-family: "KiwiSoda", "Pixel-love";
+
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            min-height: 100vh;
+
+            overflow: hidden;
+
+            user-select: none;
+        }
+
+
+        /* =====================================================
+           KHUNG GAME
+        ===================================================== */
+
+        .game {
+
+            position: relative;
+
+            width: 1000px;
+            height: 700px;
+
+            overflow: hidden;
+
+            border: 4px solid white;
+
+            border-radius: 15px;
+
+            background-image:
+                url("game 2 land.png");
+
+            background-size: cover;
+
+            background-position: center;
+
+            background-repeat: no-repeat;
+        }
+
+
+        /* =====================================================
+           TÊN ĐỐI THỦ
+        ===================================================== */
+
+        .enemy-name {
+
+            position: absolute;
+
+            left: 80px;
+            top: 185px;
+
+            color: white;
+
+            font-size: 20px;
+
+            font-weight: bold;
+
+            text-shadow:
+                2px 2px 4px #000;
+
+            z-index: 50;
+        }
+
+
+        /* =====================================================
+           TÊN NGƯỜI CHƠI
+        ===================================================== */
+
+        .player-name {
+
+            position: absolute;
+
+            left: 80px;
+            top: 385px;
+
+            color: white;
+
+            font-size: 20px;
+
+            font-weight: bold;
+
+            text-shadow:
+                2px 2px 4px #000;
+
+            z-index: 50;
+        }
+
+
+        /* =====================================================
+           THUYỀN ĐỐI THỦ
+        ===================================================== */
+
+        .enemy-boat {
+
+            position: absolute;
+
+            left: 70px;
+            top: 220px;
+
+            width: 230px;
+            height: 100px;
+
+            background-image:
+                url("boat 2.png");
+
+            background-size: contain;
+
+            background-position: center;
+
+            background-repeat: no-repeat;
+
+            z-index: 20;
+        }
+
+
+        /* =====================================================
+           THUYỀN NGƯỜI CHƠI
+        ===================================================== */
+
+        .player-boat {
+
+            position: absolute;
+
+            left: 70px;
+            top: 420px;
+
+            width: 230px;
+            height: 100px;
+
+            background-image:
+                url("boat 1.png");
+
+            background-size: contain;
+
+            background-position: center;
+
+            background-repeat: no-repeat;
+
+            z-index: 20;
+        }
+
+
+        /* =====================================================
+           VẠCH ĐÍCH
+        ===================================================== */
+
+        .finish {
+
+            position: absolute;
+
+            right: 110px;
+            top: 0;
+
+            width: 8px;
+            height: 700px;
+
+            background: #222;
+
+            z-index: 10;
+        }
+
+
+        /* =====================================================
+           DÂY CỜ
+        ===================================================== */
+
+        .rope {
+
+            position: absolute;
+
+            right: 105px;
+            top: -20px;
+
+            width: 3px;
+            height: 740px;
+
+            background: #222;
+
+            transform: rotate(1deg);
+
+            z-index: 11;
+        }
+
+
+        /* =====================================================
+           CỜ
+        ===================================================== */
+
+        .flag {
+
+            position: absolute;
+
+            width: 0;
+            height: 0;
+
+            border-top:
+                18px solid transparent;
+
+            border-bottom:
+                18px solid transparent;
+
+            border-right:
+                32px solid;
+
+            z-index: 12;
+        }
+
+
+        .flag-1 {
+            right: 108px;
+            top: 0;
+            border-right-color: #ffff00;
+        }
+
+        .flag-2 {
+            right: 108px;
+            top: 65px;
+            border-right-color: #1749d1;
+        }
+
+        .flag-3 {
+            right: 108px;
+            top: 135px;
+            border-right-color: #ffff00;
+        }
+
+        .flag-4 {
+            right: 108px;
+            top: 205px;
+            border-right-color: #d92d2d;
+        }
+
+        .flag-5 {
+            right: 108px;
+            top: 280px;
+            border-right-color: #1749d1;
+        }
+
+        .flag-6 {
+            right: 108px;
+            top: 360px;
+            border-right-color: #ffff00;
+        }
+
+        .flag-7 {
+            right: 108px;
+            top: 440px;
+            border-right-color: #d92d2d;
+        }
+
+        .flag-8 {
+            right: 108px;
+            top: 520px;
+            border-right-color: #ffff00;
+        }
+
+        .flag-9 {
+            right: 108px;
+            top: 600px;
+            border-right-color: #1749d1;
+        }
+
+
+        /* =====================================================
+           THANH ĐIỀU KHIỂN
+        ===================================================== */
+
+        .control-panel {
+
+            position: absolute;
+
+            right: 160px;
+            top: 160px;
+
+            width: 55px;
+            height: 390px;
+
+            background:
+                rgba(0, 0, 0, 0.65);
+
+            border:
+                3px solid white;
+
+            border-radius: 8px;
+
+            z-index: 100;
+        }
+
+
+        /* =====================================================
+           TARGET
+        ===================================================== */
+
+        .target {
+
+            position: absolute;
+
+            left: 4px;
+            top: 80px;
+
+            width: 41px;
+            height: 100px;
+
+            background:
+                rgba(70, 220, 80, 0.75);
+
+            border:
+                2px solid white;
+
+            border-radius: 6px;
+
+            box-shadow:
+                0 0 10px
+                rgba(70, 255, 100, 0.9);
+
+            z-index: 2;
+        }
+
+
+        /* =====================================================
+           LINE
+        ===================================================== */
+
+        .line {
+
+            position: absolute;
+
+            left: 9px;
+            top: 150px;
+
+            width: 31px;
+            height: 65px;
+
+            background: white;
+
+            border:
+                3px solid #222;
+
+            border-radius: 5px;
+
+            box-shadow:
+                0 0 8px white;
+
+            z-index: 5;
+        }
+
+
+        /* =====================================================
+           PROGRESS BAR
+        ===================================================== */
+
+        .progress {
+
+            position: absolute;
+
+            left: 70px;
+
+            width: 700px;
+            height: 18px;
+
+            background:
+                rgba(0, 0, 0, 0.5);
+
+            border:
+                2px solid white;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+
+            z-index: 30;
+        }
+
+
+        .enemy-progress {
+            top: 335px;
+        }
+
+
+        .player-progress {
+            top: 535px;
+        }
+
+
+        .progress-fill {
+
+            width: 0%;
+
+            height: 100%;
+
+            border-radius: 20px;
+        }
+
+
+        .enemy-fill {
+            background: #e9a92e;
+        }
+
+
+        .player-fill {
+            background: #d93232;
+        }
+
+
+        /* =====================================================
+           HƯỚNG DẪN
+        ===================================================== */
+
+        .instruction {
+
+            position: absolute;
+
+            left: 50%;
+
+            bottom: 25px;
+
+            transform:
+                translateX(-50%);
+
+            padding:
+                10px 20px;
+
+            background:
+                rgba(0, 0, 0, 0.7);
+
+            color: white;
+
+            font-size: 18px;
+
+            border-radius: 8px;
+
+            z-index: 100;
+
+            text-align: center;
+
+            white-space: nowrap;
+        }
+
+
+        /* =====================================================
+           GAME OVER
+        ===================================================== */
+
+        .game-over {
+
+            position: absolute;
+
+            left: 0;
+            top: 0;
+
+            width: 100%;
+            height: 100%;
+
+            display: none;
+
+            justify-content: center;
+            align-items: center;
+
+            background: transparent;
+
+            z-index: 9999;
+
+            overflow: hidden;
+        }
+
+
+        /* =====================================================
+           RESULT CARD
+
+           PNG GỐC:
+           2048 × 819
+
+           SCALE:
+           968 / 2048
+           = 0.47265625
+
+           KÍCH THƯỚC:
+           968 × 387
+
+           VỊ TRÍ:
+           left = -117.53
+           top  = 129.20
+
+           Mục đích:
+           phần bảng xanh của PNG nằm đúng
+           giữa game 1000 × 700.
+        ===================================================== */
+
+        .result-card {
+
+            position: absolute;
+
+            width: 968px;
+            height: 387px;
+
+            left: -117.53px;
+            top: 129.20px;
+
+            margin: 0;
+            padding: 0;
+
+            background-repeat: no-repeat;
+
+            background-position:
+                left top;
+
+            /*
+               GIỮ NGUYÊN TỶ LỆ PNG
+
+               Không dùng:
+               background-size: 100% 100%;
+            */
+
+            background-size:
+                968px 387px;
+
+            background-color:
+                transparent;
+
+            border: none;
+
+            box-shadow: none;
+
+            z-index: 10000;
+
+            flex-shrink: 0;
+
+            pointer-events: auto;
+        }
+
+
+        /* =====================================================
+           YOU WIN
+        ===================================================== */
+
+        .result-card.win {
+
+            background-image:
+                url("you_win_screen.png");
+        }
+
+
+        /* =====================================================
+           YOU LOSE
+        ===================================================== */
+
+        .result-card.lose {
+
+            background-image:
+                url("you_lose_screen.png");
+        }
+
+
+        /* =====================================================
+           RETURN
+
+           TỌA ĐỘ THẬT TRONG PNG:
+
+           x = 1229
+           y = 448
+           w = 173
+           h = 91
+
+           Scale = 0.47265625
+
+           Sau scale:
+
+           x = 581.0
+           y = 211.8
+           w = 81.8
+           h = 43.0
+        ===================================================== */
+
+        .restart-return {
+
+            position: absolute;
+
+            left: 581px;
+            top: 212px;
+
+            width: 82px;
+            height: 43px;
+
+            margin: 0;
+            padding: 0;
+
+            border: none;
+
+            background: transparent;
+
+            cursor: pointer;
+
+            z-index: 10001;
+
+            outline: none;
+
+            appearance: none;
+        }
+
+
+        /* =====================================================
+           PLAY AGAIN
+
+           TỌA ĐỘ THẬT TRONG PNG:
+
+           x = 1117
+           y = 554
+           w = 385
+           h = 108
+
+           Sau scale:
+
+           x = 528.1
+           y = 261.8
+           w = 181.9
+           h = 51.0
+        ===================================================== */
+
+        .restart {
+
+            position: absolute;
+
+            left: 528px;
+            top: 262px;
+
+            width: 182px;
+            height: 51px;
+
+            margin: 0;
+            padding: 0;
+
+            border: none;
+
+            background: transparent;
+
+            cursor: pointer;
+
+            z-index: 10001;
+
+            outline: none;
+
+            appearance: none;
+        }
+
+
+        /* =====================================================
+           KHÔNG THAY ĐỔI PNG KHI HOVER
+        ===================================================== */
+
+        .restart:hover,
+        .restart-return:hover {
+
+            background: transparent;
+
+            border: none;
+        }
+
+
+        .restart:focus,
+        .restart-return:focus {
+
+            outline: none;
+        }
+
+
+
+        /* =====================================================
+           MENU ĐẦU GAME + COUNTDOWN + TIMER 30 GIÂY
+        ===================================================== */
+
+        .start-menu {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 18px;
+            background: rgba(0, 0, 0, 0.62);
+            z-index: 20000;
+        }
+
+        .menu-button {
+            width: 230px;
+            height: 64px;
+            border: 3px solid white;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.75);
+            color: white;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        .menu-button:hover {
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        #menuPlay {
+            font-family: "KiwiSoda", sans-serif;
+        }
+
+        .countdown {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.38);
+            color: white;
+            font-size: 150px;
+            font-weight: bold;
+            text-shadow: 4px 4px 10px #000;
+            z-index: 19000;
+        }
+
+        .game-timer {
+            position: absolute;
+            left: 50%;
+            top: 22px;
+            transform: translateX(-50%);
+            min-width: 145px;
+            padding: 8px 18px;
+            background: rgba(0, 0, 0, 0.72);
+            border: 3px solid white;
+            border-radius: 12px;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            z-index: 150;
+            display: none;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        .game-timer.warning {
+            border-color: #ff3333;
+        }
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 1000px) {
+
+            .game {
+
+                transform:
+                    scale(
+                        calc(
+                            (100vw - 20px) / 1000
+                        )
+                    );
+
+                transform-origin:
+                    center center;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     GAME
+===================================================== -->
+
+<div
+    class="game"
+    id="game"
+>
+
+
+
+    <!-- =================================================
+         MENU ĐẦU GAME
+    ================================================= -->
+
+    <div class="start-menu" id="startMenu">
+        <button class="menu-button" id="menuPlay" type="button">
+            PLAY
+        </button>
+
+        <!-- Bạn tự thay # bằng đường dẫn website muốn chuyển tới -->
+        <a
+            class="menu-button"
+            id="menuReturn"
+            href="maychu.html"
+        >
+            RETURN
+        </a>
+    </div>
+
+
+    <!-- =================================================
+         COUNTDOWN 3 GIÂY
+    ================================================= -->
+
+    <div
+        class="countdown"
+        id="countdown"
+        aria-live="assertive"
+    >
+        3
+    </div>
+
+
+    <!-- =================================================
+         THỜI GIAN CÒN LẠI: 30 GIÂY
+    ================================================= -->
+
+    <div
+        class="game-timer"
+        id="gameTimer"
+    >
+        30s
+    </div>
+
+
+    <!-- =================================================
+         TÊN
+    ================================================= -->
+
+    <div class="enemy-name">
+        Enemy
+    </div>
+
+
+    <div class="player-name">
+        Player
+    </div>
+
+
+    <!-- =================================================
+         THUYỀN
+    ================================================= -->
+
+    <div
+        class="enemy-boat"
+        id="enemyBoat"
+    ></div>
+
+
+    <div
+        class="player-boat"
+        id="playerBoat"
+    ></div>
+
+
+    <!-- =================================================
+         THANH TIẾN ĐỘ ĐỐI THỦ
+    ================================================= -->
+
+    <div
+        class="progress enemy-progress"
+    >
+
+        <div
+            class="progress-fill enemy-fill"
+            id="enemyFill"
+        ></div>
+
+    </div>
+
+
+    <!-- =================================================
+         THANH TIẾN ĐỘ NGƯỜI CHƠI
+    ================================================= -->
+
+    <div
+        class="progress player-progress"
+    >
+
+        <div
+            class="progress-fill player-fill"
+            id="playerFill"
+        ></div>
+
+    </div>
+
+
+    <!-- =================================================
+         ĐÍCH
+    ================================================= -->
+
+    <div
+        class="finish"
+    ></div>
+
+
+    <div
+        class="rope"
+    ></div>
+
+
+    <!-- =================================================
+         CỜ
+    ================================================= -->
+
+    <div class="flag flag-1"></div>
+    <div class="flag flag-2"></div>
+    <div class="flag flag-3"></div>
+    <div class="flag flag-4"></div>
+    <div class="flag flag-5"></div>
+    <div class="flag flag-6"></div>
+    <div class="flag flag-7"></div>
+    <div class="flag flag-8"></div>
+    <div class="flag flag-9"></div>
+
+
+    <!-- =================================================
+         THANH ĐIỀU KHIỂN
+    ================================================= -->
+
+    <div
+        class="control-panel"
+        id="controlPanel"
+    >
+
+        <div
+            class="target"
+            id="target"
+        ></div>
+
+
+        <div
+            class="line"
+            id="line"
+        ></div>
+
+    </div>
+
+
+    <!-- =================================================
+         HƯỚNG DẪN
+    ================================================= -->
+
+    <div
+        class="instruction"
+    >
+
+        HOLD SPACE TO RISE UP
+
+        &nbsp; | &nbsp;
+
+        LOOSEN SPACE TO FALL DOWN
+
+    </div>
+
+
+    <!-- =================================================
+         GAME OVER
+    ================================================= -->
+
+    <div
+        class="game-over"
+        id="gameOver"
+    >
+
+        <div
+            class="result-card"
+            id="resultCard"
+        >
+
+
+            <!-- =================================================
+                 RETURN
+            ================================================= -->
+
+            <button
+                class="restart-return"
+                id="restartReturn"
+                type="button"
+                aria-label="Return"
+            ></button>
+
+
+            <!-- =================================================
+                 PLAY AGAIN
+            ================================================= -->
+
+            <button
+                class="restart"
+                id="restart"
+                type="button"
+                aria-label="Play Again"
+            ></button>
+
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+    /* =====================================================
+       ELEMENT
+    ===================================================== */
+
+    const playerBoat =
+        document.getElementById(
+            "playerBoat"
+        );
+
+
+    const enemyBoat =
+        document.getElementById(
+            "enemyBoat"
+        );
+
+
+    const line =
+        document.getElementById(
+            "line"
+        );
+
+
+    const target =
+        document.getElementById(
+            "target"
+        );
+
+
+    const playerFill =
+        document.getElementById(
+            "playerFill"
+        );
+
+
+    const enemyFill =
+        document.getElementById(
+            "enemyFill"
+        );
+
+
+    const gameOver =
+        document.getElementById(
+            "gameOver"
+        );
+
+
+    const resultCard =
+        document.getElementById(
+            "resultCard"
+        );
+
+
+    const restart =
+        document.getElementById(
+            "restart"
+        );
+
+
+    const restartReturn =
+        document.getElementById(
+            "restartReturn"
+        );
+
+    const startMenu =
+        document.getElementById(
+            "startMenu"
+        );
+
+    const menuPlay =
+        document.getElementById(
+            "menuPlay"
+        );
+
+    const menuReturn =
+        document.getElementById(
+            "menuReturn"
+        );
+
+    const countdown =
+        document.getElementById(
+            "countdown"
+        );
+
+    const gameTimer =
+        document.getElementById(
+            "gameTimer"
+        );
+
+
+    /* =====================================================
+       BIẾN GAME
+    ===================================================== */
+
+    let gameRunning = true;
+
+    /* Trạng thái menu / countdown / timer */
+    let countdownActive = false;
+    let countdownTimerId = null;
+    let gameTimeLeft = 30;
+    const GAME_TIME_LIMIT = 30;
+
+    let spaceHeld = false;
+
+    let playerProgress = 0;
+
+    let enemyProgress = 0;
+
+    let lineY = 150;
+
+    let targetY = 80;
+
+    let targetDirection = 1;
+
+
+    /* =====================================================
+       CẤU HÌNH
+    ===================================================== */
+
+    const controlHeight = 390;
+
+    const lineHeight = 65;
+
+    const targetHeight = 100;
+
+    const lineUpSpeed = 2.5;
+
+    const lineDownSpeed = 2;
+
+    const targetSpeed = 1.2;
+
+    const enemySpeed = 0.010;
+
+
+    /* =====================================================
+       ANIMATION
+    ===================================================== */
+
+    let animationId = null;
+
+    let lastTime =
+        performance.now();
+
+
+    /* =====================================================
+       UPDATE LINE
+    ===================================================== */
+
+    function updateLine() {
+
+        line.style.top =
+            lineY + "px";
+    }
+
+
+    /* =====================================================
+       UPDATE TARGET
+    ===================================================== */
+
+    function updateTarget() {
+
+        target.style.top =
+            targetY + "px";
+    }
+
+
+    /* =====================================================
+       DI CHUYỂN LINE
+    ===================================================== */
+
+    function moveLine() {
+
+        if (spaceHeld) {
+
+            lineY -=
+                lineUpSpeed;
+
+        } else {
+
+            lineY +=
+                lineDownSpeed;
+        }
+
+
+        if (lineY < 0) {
+
+            lineY = 0;
+        }
+
+
+        if (
+            lineY >
+            controlHeight -
+            lineHeight
+        ) {
+
+            lineY =
+                controlHeight -
+                lineHeight;
+        }
+
+
+        updateLine();
+    }
+
+
+    /* =====================================================
+       DI CHUYỂN TARGET
+    ===================================================== */
+
+    function moveTarget() {
+
+        targetY +=
+            targetDirection *
+            targetSpeed;
+
+
+        if (targetY <= 0) {
+
+            targetY = 0;
+
+            targetDirection = 1;
+        }
+
+
+        if (
+            targetY >=
+            controlHeight -
+            targetHeight
+        ) {
+
+            targetY =
+                controlHeight -
+                targetHeight;
+
+            targetDirection = -1;
+        }
+
+
+        updateTarget();
+    }
+
+
+    /* =====================================================
+       TÍNH ĐỘ CHỒNG
+    ===================================================== */
+
+    function getOverlap() {
+
+        const lineTop =
+            lineY;
+
+        const lineBottom =
+            lineY +
+            lineHeight;
+
+
+        const targetTop =
+            targetY;
+
+        const targetBottom =
+            targetY +
+            targetHeight;
+
+
+        const overlapTop =
+            Math.max(
+                lineTop,
+                targetTop
+            );
+
+
+        const overlapBottom =
+            Math.min(
+                lineBottom,
+                targetBottom
+            );
+
+
+        const overlap =
+            Math.max(
+                0,
+                overlapBottom -
+                overlapTop
+            );
+
+
+        return (
+            overlap /
+            lineHeight
+        );
+    }
+
+
+    /* =====================================================
+       TIẾN ĐỘ NGƯỜI CHƠI
+    ===================================================== */
+
+    function updatePlayerProgress(
+        deltaTime
+    ) {
+
+        const overlap =
+            getOverlap();
+
+
+        if (overlap > 0) {
+
+            playerProgress +=
+                0.020 *
+                overlap *
+                deltaTime;
+
+        } else {
+
+            playerProgress -=
+                0.004 *
+                deltaTime;
+        }
+
+
+        if (
+            playerProgress < 0
+        ) {
+
+            playerProgress = 0;
+        }
+
+
+        if (
+            playerProgress > 100
+        ) {
+
+            playerProgress = 100;
+        }
+
+
+        playerFill.style.width =
+            playerProgress + "%";
+    }
+
+
+    /* =====================================================
+       TIẾN ĐỘ ĐỐI THỦ
+    ===================================================== */
+
+    function updateEnemy(
+        deltaTime
+    ) {
+
+        enemyProgress +=
+            enemySpeed *
+            deltaTime;
+
+
+        if (
+            enemyProgress > 100
+        ) {
+
+            enemyProgress = 100;
+        }
+
+
+        enemyFill.style.width =
+            enemyProgress + "%";
+    }
+
+
+    /* =====================================================
+       DI CHUYỂN THUYỀN
+    ===================================================== */
+
+    function updateBoats() {
+
+        const startX = 70;
+
+        const finishX = 720;
+
+        const distance =
+            finishX -
+            startX;
+
+
+        const playerX =
+            startX +
+            (
+                playerProgress /
+                100
+            ) *
+            distance;
+
+
+        playerBoat.style.left =
+            playerX + "px";
+
+
+        const enemyX =
+            startX +
+            (
+                enemyProgress /
+                100
+            ) *
+            distance;
+
+
+        enemyBoat.style.left =
+            enemyX + "px";
+    }
+
+
+    /* =====================================================
+       KIỂM TRA THẮNG THUA
+    ===================================================== */
+
+    function checkWinner() {
+
+        if (
+            playerProgress >= 100
+        ) {
+
+            endGame(true);
+
+            return;
+        }
+
+
+        if (
+            enemyProgress >= 100
+        ) {
+
+            endGame(false);
+
+            return;
+        }
+    }
+
+
+
+    /* =====================================================
+       TIMER 30 GIÂY
+    ===================================================== */
+
+    function updateGameTimer(deltaTime) {
+
+        if (!gameRunning || countdownActive) {
+            return;
+        }
+
+        gameTimeLeft -= deltaTime / 1000;
+
+        if (gameTimeLeft <= 0) {
+            gameTimeLeft = 0;
+            gameTimer.textContent = "0s";
+            endGame(false);
+            return;
+        }
+
+        gameTimer.textContent =
+            Math.ceil(gameTimeLeft) + "s";
+
+        if (gameTimeLeft <= 10) {
+            gameTimer.classList.add("warning");
+        } else {
+            gameTimer.classList.remove("warning");
+        }
+    }
+
+
+    /* =====================================================
+       COUNTDOWN 3 GIÂY
+    ===================================================== */
+
+    function startCountdown() {
+
+        if (countdownActive) {
+            return;
+        }
+
+        countdownActive = true;
+        gameRunning = false;
+        spaceHeld = false;
+
+        countdown.style.display = "flex";
+
+        let count = 3;
+        countdown.textContent = count;
+
+        if (countdownTimerId !== null) {
+            clearInterval(countdownTimerId);
+        }
+
+        countdownTimerId = setInterval(function() {
+
+            count--;
+
+            if (count > 0) {
+
+                countdown.textContent = count;
+
+            } else {
+
+                clearInterval(countdownTimerId);
+                countdownTimerId = null;
+
+                countdown.textContent = "GO!";
+
+                setTimeout(function() {
+
+                    countdown.style.display = "none";
+                    countdownActive = false;
+
+                    /* Chính thức bắt đầu game */
+                    gameRunning = true;
+                    spaceHeld = false;
+                    lastTime = performance.now();
+
+                    if (animationId !== null) {
+                        cancelAnimationFrame(animationId);
+                    }
+
+                    animationId =
+                        requestAnimationFrame(
+                            gameLoop
+                        );
+
+                }, 450);
+            }
+
+        }, 1000);
+    }
+
+
+    /* =====================================================
+       BẮT ĐẦU GAME SAU MENU
+    ===================================================== */
+
+    function startNewGame() {
+
+        /* Reset toàn bộ game trước khi đếm ngược */
+        resetGame();
+
+        /* Menu biến mất */
+        startMenu.style.display = "none";
+
+        /* Hiện đồng hồ 30 giây */
+        gameTimer.style.display = "block";
+
+        /* Đếm ngược 3 giây */
+        startCountdown();
+    }
+
+
+    /* =====================================================
+       KẾT THÚC GAME
+    ===================================================== */
+
+    function endGame(
+        playerWon
+    ) {
+
+        if (!gameRunning) {
+
+            return;
+        }
+
+
+        gameRunning = false;
+
+        spaceHeld = false;
+
+        if (countdownTimerId !== null) {
+            clearInterval(countdownTimerId);
+            countdownTimerId = null;
+        }
+
+        countdownActive = false;
+        countdown.style.display = "none";
+        gameTimer.style.display = "none";
+
+
+        if (
+            animationId !== null
+        ) {
+
+            cancelAnimationFrame(
+                animationId
+            );
+
+            animationId = null;
+        }
+
+
+        /* Xóa trạng thái cũ */
+
+        resultCard.classList.remove(
+            "win",
+            "lose"
+        );
+
+
+        /* Chọn ảnh */
+
+        if (playerWon) {
+
+            resultCard.classList.add(
+                "win"
+            );
+
+        } else {
+
+            resultCard.classList.add(
+                "lose"
+            );
+        }
+
+
+        /* Hiện màn hình */
+
+        gameOver.style.display =
+            "flex";
+    }
+
+
+    /* =====================================================
+       SPACE - KEYDOWN
+    ===================================================== */
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.code === "Space"
+            ) {
+
+                event.preventDefault();
+
+
+                if (gameRunning) {
+
+                    spaceHeld = true;
+                }
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       SPACE - KEYUP
+    ===================================================== */
+
+    document.addEventListener(
+        "keyup",
+        function(event) {
+
+            if (
+                event.code === "Space"
+            ) {
+
+                event.preventDefault();
+
+                spaceHeld = false;
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       CHUỘT
+    ===================================================== */
+
+    document.addEventListener(
+        "mousedown",
+        function(event) {
+
+            /*
+               Không coi click vào nút
+               kết quả là giữ SPACE.
+            */
+
+            if (
+                event.target === restart ||
+                event.target === restartReturn
+            ) {
+
+                return;
+            }
+
+
+            if (gameRunning) {
+
+                spaceHeld = true;
+            }
+
+        }
+    );
+
+
+    document.addEventListener(
+        "mouseup",
+        function() {
+
+            spaceHeld = false;
+
+        }
+    );
+
+
+    /* =====================================================
+       RESET GAME
+    ===================================================== */
+
+    function resetGame() {
+
+        /* Dừng animation */
+
+        if (
+            animationId !== null
+        ) {
+
+            cancelAnimationFrame(
+                animationId
+            );
+
+            animationId = null;
+        }
+
+
+        /* Reset trạng thái */
+
+        gameRunning = true;
+
+        spaceHeld = false;
+
+
+        /* Reset progress */
+
+        playerProgress = 0;
+
+        enemyProgress = 0;
+
+        /* Reset thời gian 30 giây */
+
+        gameTimeLeft = GAME_TIME_LIMIT;
+
+        gameTimer.textContent = "30s";
+        gameTimer.classList.remove("warning");
+
+
+        /* Reset thanh điều khiển */
+
+        lineY = 150;
+
+        targetY = 80;
+
+        targetDirection = 1;
+
+
+        /* Reset progress bar */
+
+        playerFill.style.width =
+            "0%";
+
+        enemyFill.style.width =
+            "0%";
+
+
+        /* Ẩn màn hình kết quả */
+
+        gameOver.style.display =
+            "none";
+
+
+        /* Xóa WIN / LOSE */
+
+        resultCard.classList.remove(
+            "win",
+            "lose"
+        );
+
+
+        /* Cập nhật vị trí */
+
+        updateLine();
+
+        updateTarget();
+
+        updateBoats();
+
+
+        /* Reset thời gian */
+
+        lastTime =
+            performance.now();
+
+
+        /* Chưa chạy ngay.
+           Nút PLAY sẽ gọi countdown 3 giây. */
+    }
+
+
+    /* =====================================================
+       NÚT MENU PLAY
+    ===================================================== */
+
+    menuPlay.addEventListener(
+        "click",
+        function(event) {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            startNewGame();
+        }
+    );
+
+
+    /* =====================================================
+       NÚT MENU RETURN
+       Để href="#" để người dùng tự thay đường dẫn.
+    ===================================================== */
+
+    menuReturn.addEventListener(
+        "click",
+        function(event) {
+
+            if (menuReturn.getAttribute("href") === "maychu.html") {
+                event.preventDefault();
+            }
+        }
+    );
+
+
+    /* =====================================================
+       NÚT RETURN
+    ===================================================== */
+
+    restartReturn.addEventListener(
+        "click",
+        function(event) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            resetGame();
+        }
+    );
+
+
+    /* =====================================================
+       NÚT PLAY AGAIN
+    ===================================================== */
+
+    restart.addEventListener(
+        "click",
+        function(event) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            startMenu.style.display = "none";
+            startNewGame();
+        }
+    );
+
+
+    /* =====================================================
+       GAME LOOP
+    ===================================================== */
+
+    function gameLoop(
+        currentTime
+    ) {
+
+        if (!gameRunning) {
+
+            animationId = null;
+
+            return;
+        }
+
+
+        const deltaTime =
+            Math.min(
+                currentTime -
+                lastTime,
+                50
+            );
+
+
+        lastTime =
+            currentTime;
+
+
+        moveLine();
+
+        moveTarget();
+
+        updatePlayerProgress(
+            deltaTime
+        );
+
+        updateEnemy(
+            deltaTime
+        );
+
+        updateBoats();
+
+        updateGameTimer(deltaTime);
+
+        checkWinner();
+
+
+        if (gameRunning) {
+
+            animationId =
+                requestAnimationFrame(
+                    gameLoop
+                );
+        }
+    }
+
+
+    /* =====================================================
+       KHỞI ĐỘNG
+       Hiện menu, chưa chạy game.
+    ===================================================== */
+
+    updateLine();
+
+    updateTarget();
+
+    updateBoats();
+
+    gameRunning = false;
+    countdownActive = false;
+
+    gameTimeLeft = GAME_TIME_LIMIT;
+
+    gameTimer.textContent = "30s";
+
+    startMenu.style.display = "flex";
+
+    countdown.style.display = "none";
+
+    gameTimer.style.display = "none";
+
+    lastTime =
+        performance.now();
+
+</script>
+
+
+</body>
+
+</html>

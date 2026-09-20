@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>To pray for good</title>
+  <meta name="description" content="A website inspired by the ritualistic fair games in Vietnam.">
+
+  <style>
+    /* ==========================================================
+       Fonts (Figma: "KiwiSoda Medium" and "pixel-love Regular").
+       Files are not embedded; local installs are used if present.
+       ========================================================== */
+    @font-face {
+      font-family: "KiwiSoda";
+      font-weight: 500;
+      font-style: normal;
+      src: local("KiwiSoda"), local("KiwiSoda Medium"), local("KiwiSoda-Medium");
+    }
+
+    @font-face {
+      font-family: "pixel-love";
+      font-weight: 400;
+      font-style: normal;
+      src: local("pixel-love"), local("pixel-love Regular"), local("pixel-love-Regular");
+    }
+
+    /* ==========================================================
+       Design tokens
+       ========================================================== */
+    :root {
+      --u: calc(100vw / 1440);
+
+      --color-bg: #fff8ef;
+      --color-sage: #b4d0b5;
+      --color-mint: #eaffeb;
+      --color-forest: #113d22;
+      --color-red: #c00003;
+      --color-white: #ffffff;
+
+      --font-display: "KiwiSoda", "Comic Sans MS", "Chalkboard SE", cursive, sans-serif;
+      --font-pixel: "pixel-love", "Courier New", ui-monospace, monospace;
+
+      --fs-display: calc(128 * var(--u));
+      --fs-body: calc(32 * var(--u));
+      --fs-nav: 20px;
+
+      --ls-story: calc(3.2 * var(--u));
+      --ls-description: calc(6.08 * var(--u));
+
+      --shadow-text: calc(3 * var(--u)) calc(5 * var(--u)) 0 var(--color-forest);
+
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+
+      --motion-loop: 2s;
+      --motion-menu: 0.35s;
+
+      --nav-w: calc(207 * var(--u));
+      --nav-left: calc(30 * var(--u));
+      --nav-top: calc(54 * var(--u));
+      --nav-stick: calc(31 * var(--u));
+    }
+
+    /* ==========================================================
+       Base
+       ========================================================== */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: var(--color-bg);
+      color: var(--color-mint);
+    }
+
+    img {
+      display: block;
+    }
+
+    .page {
+      position: relative;
+      width: 100%;
+      overflow-x: clip;
+      background: var(--color-bg);
+    }
+
+    /* ==========================================================
+       Header / navigation
+       ========================================================== */
+    .header {
+      position: sticky;
+      top: calc(-1 * var(--nav-stick));
+      z-index: 20;
+      height: 0;
+    }
+
+    .nav {
+      position: absolute;
+      top: var(--nav-top);
+      left: var(--nav-left);
+      width: var(--nav-w);
+    }
+
+    .nav__toggle {
+      position: relative;
+      display: block;
+      width: 100%;
+      aspect-ratio: 207 / 107;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .nav__toggle:focus-visible {
+      outline: 3px solid var(--color-forest);
+      outline-offset: 2px;
+    }
+
+    .nav__toggle-frame {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .nav__toggle-frame-img {
+      position: absolute;
+      top: -82.29%;
+      left: -190.5%;
+      width: 579.72%;
+      height: 449.31%;
+      max-width: none;
+    }
+
+    .nav__toggle-icon {
+      position: absolute;
+      top: calc(21 / 107 * 100%);
+      left: calc(58 / 207 * 100%);
+      width: calc(80 / 207 * 100%);
+      height: calc(72 / 107 * 100%);
+      object-fit: contain;
+      pointer-events: none;
+    }
+
+    .nav__menu {
+      position: absolute;
+      top: calc(100% + var(--space-2));
+      left: 0;
+      display: grid;
+      grid-template-rows: 0fr;
+      min-width: max(100%, 160px);
+      opacity: 0;
+      visibility: hidden;
+      transition:
+        grid-template-rows var(--motion-menu) ease,
+        opacity var(--motion-menu) ease,
+        visibility 0s linear var(--motion-menu);
+    }
+
+    .nav__menu--open {
+      grid-template-rows: 1fr;
+      opacity: 1;
+      visibility: visible;
+      transition-delay: 0s, 0s, 0s;
+    }
+
+    .nav__panel {
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .nav__list {
+      margin: 0;
+      padding: var(--space-2);
+      list-style: none;
+      background: var(--color-sage);
+      border: 3px solid var(--color-forest);
+    }
+
+    .nav__link {
+      display: block;
+      padding: var(--space-2) var(--space-3);
+      font-family: var(--font-pixel);
+      font-size: var(--fs-nav);
+      line-height: normal;
+      color: var(--color-forest);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .nav__link:hover,
+    .nav__link:focus-visible {
+      background: var(--color-mint);
+      outline: none;
+    }
+
+    /* ==========================================================
+       Scene
+       ========================================================== */
+    .scene {
+      position: relative;
+      left: calc(50% - 847 * var(--u));
+      width: calc(1694 * var(--u));
+      height: calc(6091 * var(--u));
+      overflow: clip;
+    }
+
+    .scene__layer {
+      position: absolute;
+      display: block;
+      left: calc(var(--x) * var(--u));
+      top: calc(var(--y) * var(--u));
+      width: calc(var(--w) * var(--u));
+      height: calc(var(--h) * var(--u));
+      opacity: var(--opacity, 1);
+      pointer-events: none;
+    }
+
+    .scene__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      object-fit: cover;
+    }
+
+    .scene__img--flip-x {
+      transform: scaleX(-1);
+    }
+
+    .scene__img--flip-y {
+      transform: scaleY(-1);
+    }
+
+    .scene__crop {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    /* layer geometry */
+    .scene__layer--sky {
+      --x: 0;
+      --y: 0;
+      --w: 1694;
+      --h: 6065;
+    }
+
+    .scene__layer--mountains {
+      --x: -1939;
+      --y: 247;
+      --w: 5512;
+      --h: 5512;
+    }
+
+    .scene__layer--haze {
+      --x: -102;
+      --y: 3000;
+      --w: 1948;
+      --h: 2661;
+    }
+
+    .scene__layer--water-a {
+      --x: -121;
+      --y: 5582;
+      --w: 1688;
+      --h: 675;
+    }
+
+    .scene__layer--land-b {
+      --x: -96;
+      --y: 5426;
+      --w: 1662;
+      --h: 665;
+    }
+
+    .scene__layer--water-b {
+      --x: -121;
+      --y: 5582;
+      --w: 1688;
+      --h: 675;
+      --opacity: 0.46;
+    }
+
+    .scene__layer--boat {
+      --x: 571;
+      --y: 5314;
+      --w: 1221;
+      --h: 488;
+    }
+
+    .scene__layer--land-a {
+      --x: -98;
+      --y: 5435;
+      --w: 1665;
+      --h: 666;
+    }
+
+    .scene__layer--tree {
+      --x: -1139;
+      --y: 5014;
+      --w: 2619;
+      --h: 1047;
+    }
+
+    .scene__layer--bush-2 {
+      --x: -199;
+      --y: 5607;
+      --w: 1344;
+      --h: 537;
+    }
+
+    .scene__layer--bush-1 {
+      --x: -435;
+      --y: 5695;
+      --w: 1123;
+      --h: 449;
+    }
+
+    .scene__layer--bush-3 {
+      --x: 817;
+      --y: 5361;
+      --w: 1499;
+      --h: 599;
+    }
+
+    .scene__layer--bush-5 {
+      --x: 1095;
+      --y: 5538;
+      --w: 1319;
+      --h: 528;
+    }
+
+    .scene__layer--haze {
+      background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0),
+        rgba(255, 255, 255, 0.16)
+      );
+    }
+
+    .scene__layer--sky .scene__img {
+      left: -419.72%;
+      width: 895.29%;
+      object-fit: fill;
+    }
+
+    /* ==========================================================
+       Fog layers
+       ========================================================== */
+    .scene__layer--fog-3-1 {
+      --x: -465;
+      --y: 3068;
+      --w: 1617;
+      --h: 647;
+      --opacity: 0.74;
+      --drift-from: 0;
+      --drift-to: -75;
+    }
+
+    .scene__layer--fog-3-4 {
+      --x: 341;
+      --y: 3820;
+      --w: 1779;
+      --h: 712;
+      --opacity: 0.4;
+      --drift-from: 0;
+      --drift-to: -30;
+    }
+
+    .scene__layer--fog-3-3 {
+      --x: 327;
+      --y: 797;
+      --w: 1617;
+      --h: 647;
+      --opacity: 0.74;
+      --drift-from: 0;
+      --drift-to: 14;
+    }
+
+    .scene__layer--fog-3-2 {
+      --x: 0;
+      --y: 2010;
+      --w: 998;
+      --h: 399;
+      --opacity: 0.74;
+      --drift-from: -30;
+      --drift-to: -12;
+    }
+
+    .scene__layer--fog-3-5 {
+      --x: -181;
+      --y: 4478;
+      --w: 998;
+      --h: 399;
+      --opacity: 0.74;
+      --drift-from: 0;
+      --drift-to: 30;
+    }
+
+    .scene__layer--fog-2-1 {
+      --x: 737;
+      --y: 2495;
+      --w: 1319;
+      --h: 527;
+      --opacity: 0.7;
+      --drift-from: 0;
+      --drift-to: 18;
+    }
+
+    .scene__layer--fog-2-6 {
+      --x: -283;
+      --y: 2978;
+      --w: 1319;
+      --h: 527;
+      --opacity: 0.36;
+      --drift-from: 0;
+      --drift-to: 18;
+    }
+
+    .scene__layer--fog-2-4 {
+      --x: -521;
+      --y: 1065;
+      --w: 1729;
+      --h: 692;
+      --opacity: 0.7;
+      --drift-from: 0;
+      --drift-to: -17;
+    }
+
+    .scene__layer--fog-2-7 {
+      --x: 566;
+      --y: 3801;
+      --w: 1729;
+      --h: 692;
+      --opacity: 0.7;
+      --drift-from: 0;
+      --drift-to: -17;
+    }
+
+    .scene__layer--fog-2-2 {
+      --x: 856;
+      --y: 1610;
+      --w: 1465;
+      --h: 586;
+      --opacity: 0.7;
+      --drift-from: 0;
+      --drift-to: 31;
+    }
+
+    .scene__layer--fog-2-5 {
+      --x: -370;
+      --y: 4422;
+      --w: 1465;
+      --h: 586;
+      --opacity: 0.7;
+      --drift-from: 0;
+      --drift-to: -17;
+    }
+
+    .scene__layer--fog-2-3 {
+      --x: -154;
+      --y: 720;
+      --w: 1465;
+      --h: 586;
+      --opacity: 0.7;
+      --drift-from: 0;
+      --drift-to: -13;
+    }
+
+    .scene__layer--drift {
+      animation: drift var(--motion-loop) linear infinite alternate;
+    }
+
+    /* ==========================================================
+       Text
+       ========================================================== */
+    .scene__title,
+    .scene__description,
+    .scene__hint {
+      position: absolute;
+      margin: 0;
+      font-style: normal;
+      line-height: normal;
+      text-shadow: var(--shadow-text);
+      animation: float var(--motion-loop) linear infinite alternate;
+    }
+
+    .scene__title {
+      top: calc(5343 * var(--u));
+      left: calc(1050 * var(--u));
+      transform: translateX(-50%);
+      font-family: var(--font-display);
+      font-weight: 500;
+      font-size: var(--fs-display);
+      color: var(--color-sage);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .scene__description {
+      top: calc(4614 * var(--u));
+      left: calc(588 * var(--u));
+      width: calc(906 * var(--u));
+      font-family: var(--font-pixel);
+      font-weight: 400;
+      font-size: var(--fs-body);
+      letter-spacing: var(--ls-description);
+      color: var(--color-sage);
+      text-align: right;
+      overflow-wrap: break-word;
+    }
+
+    .scene__hint {
+      top: calc(3946 * var(--u));
+      left: calc(210 * var(--u));
+      width: calc(711 * var(--u));
+      min-height: calc(256 * var(--u));
+      font-family: var(--font-pixel);
+      font-weight: 400;
+      font-size: var(--fs-body);
+      letter-spacing: var(--ls-story);
+      color: var(--color-mint);
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
+    }
+
+    .scene__hint-line {
+      margin: 0;
+    }
+
+    .scene__accent {
+      color: var(--color-red);
+    }
+
+    /* ==========================================================
+       Games
+       ========================================================== */
+    .game {
+      position: absolute;
+      left: calc(var(--x) * var(--u));
+      top: calc(var(--y) * var(--u));
+      width: calc(var(--w) * var(--u));
+      height: calc(var(--h) * var(--u));
+    }
+
+    .game__sprite {
+      position: absolute;
+      inset: var(--inset);
+      /* box-shadow: calc(var(--sx) * var(--u)) calc(var(--sy) * var(--u)) 0 0 var(--color-white); */
+    }
+
+    .game__crop {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .game__img {
+      position: absolute;
+      top: var(--img-t);
+      left: var(--img-l);
+      width: var(--img-w);
+      height: var(--img-h);
+      max-width: none;
+    }
+
+    /* ==========================================================
+       HOVER TEXT
+       Chỉ hiện chữ.
+       Không nền - không viền - không khung - không shadow.
+       ========================================================== */
+    .game__link {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+
+      display: block;
+      margin: 0;
+      padding: 0;
+
+      transform: translate(-50%, -50%);
+
+      font-family: var(--font-pixel);
+      font-size: clamp(14px, 1.5vw, 24px);
+      line-height: 1.2;
+      text-align: center;
+      white-space: nowrap;
+
+      color: var(--color-white);
+      text-decoration: none;
+
+      /* Hoàn toàn không có nền / khung */
+      background: transparent;
+      background-image: none;
+      border: none;
+      border-width: 0;
+      box-shadow: none;
+      outline: none;
+
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+
+      z-index: 20;
+
+      transition:
+        opacity 0.25s ease,
+        color 0.25s ease,
+        transform 0.25s ease,
+        visibility 0.25s ease;
+    }
+
+    /* Di chuột vào game -> chỉ hiện chữ */
+    .game:hover .game__link,
+    .game:focus-within .game__link {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+
+      background: transparent;
+      background-image: none;
+      border: none;
+      box-shadow: none;
+    }
+
+    /* Di chuột vào chữ */
+    .game__link:hover,
+    .game__link:focus-visible {
+      color: var(--color-mint);
+
+      background: transparent;
+      background-image: none;
+      border: none;
+      box-shadow: none;
+      outline: none;
+
+      transform: translate(-50%, -50%) scale(1.05);
+    }
+
+    .game--5 {
+      --x: 409;
+      --y: 1065;
+      --w: 1121;
+      --h: 293;
+      --inset: 0 0 0 71.1%;
+      --sx: -12;
+      --sy: 0;
+      --img-h: 218.11%;
+      --img-l: -14.44%;
+      --img-t: 0;
+      --img-w: 492.9%;
+    }
+
+    .game--4 {
+      --x: 256;
+      --y: 1570;
+      --w: 1121;
+      --h: 227;
+      --inset: 0 59.86% 0 0;
+      --sx: -13;
+      --sy: 1;
+      --img-h: 320.55%;
+      --img-l: -27.74%;
+      --img-t: -151.66%;
+      --img-w: 404.34%;
+    }
+
+    .game--3 {
+      --x: 465;
+      --y: 2010;
+      --w: 966;
+      --h: 496;
+      --inset: 0 0 0 62.01%;
+      --sx: -8;
+      --sy: -3;
+      --img-h: 121.06%;
+      --img-l: -185.51%;
+      --img-t: -21.06%;
+      --img-w: 409.19%;
+    }
+
+    .game--2 {
+      --x: 225;
+      --y: 2598;
+      --w: 811;
+      --h: 470;
+      --inset: 0 65.1% 0 0;
+      --sx: -10;
+      --sy: 7;
+      --img-h: 118.44%;
+      --img-l: -145.86%;
+      --img-t: -18.44%;
+      --img-w: 491.72%;
+    }
+
+    .game--1 {
+      --x: 552;
+      --y: 3108;
+      --w: 908;
+      --h: 542;
+      --inset: 0 0 0 5.62%;
+      --sx: -12;
+      --sy: 3;
+      --img-h: 128.93%;
+      --img-l: -82.31%;
+      --img-t: -20.94%;
+      --img-w: 203.64%;
+    }
+
+    /* ==========================================================
+       Star
+       ========================================================== */
+    .star {
+      position: absolute;
+      top: calc(179 * var(--u));
+      left: calc(706 * var(--u));
+      display: block;
+      width: calc(344 * var(--u));
+      height: calc(234 * var(--u));
+      cursor: pointer;
+      animation: bob var(--motion-loop) linear infinite alternate;
+    }
+
+    .star:focus-visible {
+      outline: 3px solid var(--color-forest);
+      outline-offset: 2px;
+    }
+
+    .star__crop {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .star__img {
+      position: absolute;
+      top: -61.16%;
+      left: -145.35%;
+      width: 440.7%;
+      height: 259.08%;
+      max-width: none;
+    }
+
+    /* ==========================================================
+       Keyframes
+       ========================================================== */
+    @keyframes drift {
+      from {
+        translate: calc(var(--drift-from) * var(--u)) 0;
+      }
+
+      to {
+        translate: calc(var(--drift-to) * var(--u)) 0;
+      }
+    }
+
+    @keyframes float {
+      from {
+        translate: 0 0;
+      }
+
+      to {
+        translate: 0 calc(-29 * var(--u));
+      }
+    }
+
+    @keyframes bob {
+      from {
+        translate: 0 0;
+      }
+
+      to {
+        translate: 0 calc(10 * var(--u));
+      }
+    }
+
+    /* ==========================================================
+       Tablet
+       ========================================================== */
+    @media (max-width: 1024px) {
+      :root {
+        --fs-body: max(calc(32 * var(--u)), 16px);
+        --ls-story: max(calc(3.2 * var(--u)), 1px);
+        --ls-description: max(calc(6.08 * var(--u)), 1.5px);
+        --nav-w: max(calc(207 * var(--u)), 104px);
+        --nav-left: max(calc(30 * var(--u)), 16px);
+        --nav-top: max(calc(54 * var(--u)), 16px);
+        --nav-stick: 0px;
+      }
+
+      .header {
+        top: 0;
+      }
+    }
+
+    /* ==========================================================
+       Mobile
+       ========================================================== */
+    @media (max-width: 768px) {
+      :root {
+        --fs-display: max(calc(128 * var(--u)), 36px);
+        --fs-body: max(calc(32 * var(--u)), 14px);
+        --ls-story: 1px;
+        --ls-description: 1.2px;
+        --nav-w: 88px;
+        --nav-left: 12px;
+        --nav-top: 12px;
+        --fs-nav: 18px;
+      }
+
+      .scene__title {
+        left: 50%;
+        width: 86vw;
+        white-space: normal;
+      }
+
+      .scene__description {
+        left: 50%;
+        width: 88vw;
+        transform: translateX(-50%);
+      }
+
+      .scene__hint {
+        left: 50%;
+        width: 80vw;
+        min-height: 0;
+        transform: translateX(-50%);
+      }
+
+      .game__link {
+        font-size: 13px;
+        padding: 0;
+        background: transparent;
+        background-image: none;
+        border: none;
+        box-shadow: none;
+      }
+    }
+
+    /* ==========================================================
+       Reduced motion
+       ========================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <header class="header">
+      <nav class="nav" aria-label="Main navigation">
+
+        <button
+          class="nav__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="nav-menu"
+          aria-label="Open navigation menu">
+
+          <span class="nav__toggle-frame">
+            <img
+              class="nav__toggle-frame-img"
+              src="https://www.figma.com/api/mcp/asset/1b2827aa-a7c0-4f1f-8b4b-dce30b8cf82a.png"
+              alt="Green pixel-art button frame">
+          </span>
+
+          <img
+            class="nav__toggle-icon"
+            src="https://www.figma.com/api/mcp/asset/e8a1a3e9-745f-46d7-b271-f8559e824784.png"
+            alt="Hamburger menu icon">
+        </button>
+
+        <div class="nav__menu" id="nav-menu">
+          <div class="nav__panel">
+            <ul class="nav__list">
+              <li><a class="nav__link" href="keoco.html">Tug of war</a></li>
+              <li><a class="nav__link" href="DuaThuyen.html">Boat Race</a></li>
+              <li><a class="nav__link" href="NhaySap.html">Bamboo Dance</a></li>
+              <li><a class="nav__link" href="NemCon.html">Throwing "con"</a></li>
+              <li><a class="nav__link" href="cuopcau.html">Ball Snatching</a></li>
+            </ul>
+          </div>
+        </div>
+
+      </nav>
+    </header>
+
+    <main>
+      <section class="scene" aria-labelledby="scene-title">
+
+        <div class="scene__layer scene__layer--sky">
+          <div class="scene__crop">
+            <img
+              class="scene__img"
+              src="https://www.figma.com/api/mcp/asset/027c27f8-72be-4c44-abd3-e5fa7f601296.png"
+              alt="Pale cream sky backdrop">
+          </div>
+        </div>
+
+        <div class="scene__layer scene__layer--mountains">
+          <img
+            class="scene__img"
+            src="https://www.figma.com/api/mcp/asset/c4e0ceae-df6e-4655-b97c-964a1c7d8ae8.png"
+            alt="Painted grey-green mountain with a steep peak">
+        </div>
+
+        <div class="scene__layer scene__layer--haze" aria-hidden="true"></div>
+
+        <div class="scene__layer scene__layer--water-a">
+          <img
+            class="scene__img"
+            src="https://www.figma.com/api/mcp/asset/3098b09a-6ffc-4d1d-b644-8cc69e45e173.png"
+            alt="Painted still water at the foot of the mountain">
+        </div>
+
+        <div class="scene__layer scene__layer--land-b">
+          <img
+            class="scene__img"
+            src="https://www.figma.com/api/mcp/asset/68c8ef10-d967-4274-b4a1-5e173ab9cf87.png"
+            alt="Painted shoreline land behind the water">
+        </div>
+
+        <div class="scene__layer scene__layer--water-b">
+          <img
+            class="scene__img"
+            src="https://www.figma.com/api/mcp/asset/d4668991-8324-425f-a08d-6ba03000438b.png"
+            alt="Translucent water ripples">
+        </div>
+
+        <div class="scene__layer scene__layer--boat">
+          <img
+            class="scene__img"
+            src="https://www.figma.com/api/mcp/asset/36f649fb-fe1d-46d8-867f-8c7ae3d4d856.png"
+            alt="Small wooden boat floating on the water">
+        </div>
+
+        <div class="scene__layer scene__layer--land-a">
+          <img
+            class="scene__img"
+            src="https://www.figma.com/api/mcp/asset/e3c639db-315c-433d-82a2-0b7dbbcbd025.png"
+            alt="Painted shoreline land in the foreground">
+        </div>
+
+        <div class="scene__layer scene__layer--tree">
+          <img
+            class="scene__img"
+            src="https://www.figma.com/api/mcp/asset/54d2d63d-a481-4240-9912-70b7c6f52247.png"
+            alt="Large painted tree with spreading branches">
+        </div>
+
+        <div class="scene__layer scene__layer--bush-2">
+          <img
+            class="scene__img"
+            src="https://www.figma.com/api/mcp/asset/53a9c6a3-92b9-4b32-b034-5157ae724a9a.png"
+            alt="Green painted bush, left of centre">
+        </div>
+
+        <div class="scene__layer scene__layer--bush-1">
+          <img
+            class="scene__img"
+            src="https://www.figma.com/api/mcp/asset/98973ade-a3ef-4906-a279-3c99fa8447f4.png"
+            alt="Green painted bush, far left">
+        </div>
+
+        <div class="scene__layer scene__layer--bush-3">
+          <img
+            class="scene__img"
+            src="https://www.figma.com/api/mcp/asset/9c34eec1-2263-423d-b6bf-a67669bb2d79.png"
+            alt="Green painted bush, right of centre">
+        </div>
+
+        <div class="scene__layer scene__layer--bush-5">
+          <img
+            class="scene__img"
+            src="https://www.figma.com/api/mcp/asset/88284478-f94f-43fa-929b-5943db7a9835.png"
+            alt="Green painted bush, far right">
+        </div>
+
+        <h1 class="scene__title" id="scene-title">
+          To pray for good
+        </h1>
+
+        <div class="scene__layer scene__layer--fog-3-1 scene__layer--drift">
+          <img
+            class="scene__img"
+            src="https://www.figma.com/api/mcp/asset/9553ea30-1bd4-4e23-9d8e-896bed4a42bd.png"
+            alt="Soft drifting fog bank">
+        </div>
+
+        <div class="scene__layer scene__layer--fog-3-4 scene__layer--drift">
+          <img
+            class="scene__img scene__img--flip-y"
+            src="https://www.figma.com/api/mcp/asset/9553ea30-1bd4-4e23-9d8e-896bed4a42bd.png"
+            alt="Soft drifting fog bank, flipped vertically">
+        </div>
+
+        <div class="scene__layer scene__layer--fog-3-3 scene__layer--drift">
+          <img
+            class="scene__img"
+            src="https://www.figma.com/api/mcp/asset/9553ea30-1bd4-4e23-9d8e-896bed4a42bd.png"
+            alt="Soft drifting fog bank over the mountain">
+        </div>
+
+        <div class="scene__layer scene__layer--fog-3-2 scene__layer--drift">
+          <img
+            class="scene__img scene__img--flip-x"
+            src="https://www.figma.com/api/mcp/asset/9553ea30-1bd4-4e23-9d8e-896bed4a42bd.png"
+            alt="Small soft fog bank, flipped horizontally">
+        </div>
+
+        <div class="scene__layer scene__layer--fog-3-5 scene__layer--drift">
+          <img
+            class="scene__img scene__img--flip-x"
+            src="https://www.figma.com/api/mcp/asset/9553ea30-1bd4-4e23-9d8e-896bed4a42bd.png"
+            alt="Small soft fog bank near the water, flipped horizontally">
+        </div>
+
+        <div class="scene__layer scene__layer--fog-2-1 scene__layer--drift">
+          <img
+            class="scene__img"
+            src="https://www.figma.com/api/mcp/asset/6c4dee23-7a9d-4926-b7b1-eed5b862d8e8.png"
+            alt="Swirling white mist">
+        </div>
+
+        <div class="scene__layer scene__layer--fog-2-6 scene__layer--drift">
+          <img
+            class="scene__img"
+            src="https://www.figma.com/api/mcp/asset/6c4dee23-7a9d-4926-b7b1-eed5b862d8e8.png"
+            alt="Faint swirling white mist">
+        </div>
+
+        <div class="scene__layer scene__layer--fog-2-4 scene__layer--drift">
+          <img
+            class="scene__img"
+            src="https://www.figma.com/api/mcp/asset/6c4dee23-7a9d-4926-b7b1-eed5b862d8e8.png"
+            alt="Swirling white mist near the summit">
+        </div>
+
+        <div class="scene__layer scene__layer--fog-2-7 scene__layer--drift">
+          <img
+            class="scene__img"
+            src="https://www.figma.com/api/mcp/asset/6c4dee23-7a9d-4926-b7b1-eed5b862d8e8.png"
+            alt="Swirling white mist on the lower slope">
+        </div>
+
+        <div class="scene__layer scene__layer--fog-2-2 scene__layer--drift">
+          <img
+            class="scene__img scene__img--flip-y"
+            src="https://www.figma.com/api/mcp/asset/6c4dee23-7a9d-4926-b7b1-eed5b862d8e8.png"
+            alt="Swirling white mist, flipped vertically">
+        </div>
+
+        <div class="scene__layer scene__layer--fog-2-5 scene__layer--drift">
+          <img
+            class="scene__img scene__img--flip-y"
+            src="https://www.figma.com/api/mcp/asset/6c4dee23-7a9d-4926-b7b1-eed5b862d8e8.png"
+            alt="Swirling white mist above the trees, flipped vertically">
+        </div>
+
+        <div class="scene__layer scene__layer--fog-2-3 scene__layer--drift">
+          <img
+            class="scene__img scene__img--flip-y"
+            src="https://www.figma.com/api/mcp/asset/6c4dee23-7a9d-4926-b7b1-eed5b862d8e8.png"
+            alt="Swirling white mist below the star, flipped vertically">
+        </div>
+
+        <p class="scene__description">
+          A website inspired by the ritualistic fair games in Vietnam.
+          Each game takes about 20-30 seconds gameplay.
+          All the game mechanics are inspired from their real life counterparts
+        </p>
+
+        <div class="scene__hint">
+          <p class="scene__hint-line">
+            Collect all 5 hidden stars inside each game to unlock the story behind each games
+          </p>
+
+          <p class="scene__hint-line" aria-hidden="true">&#8203;</p>
+        </div>
+
+        <!-- =====================================================
+             GAME 1
+             ===================================================== -->
+        <article class="game game--1" id="game-1">
+
+          <div class="game__sprite">
+            <div class="game__crop">
+              <img
+                class="game__img"
+                src="https://www.figma.com/api/mcp/asset/5432b7c5-6a37-4387-bb56-814af5046c75.png"
+                alt="Illustration of fair game 1">
+            </div>
+          </div>
+
+          <a
+            class="game__link"
+            href="keoco.html"
+            aria-label="Play Tug of War">
+            TUG OF WAR
+          </a>
+
+        </article>
+
+        <!-- =====================================================
+             GAME 2
+             ===================================================== -->
+        <article class="game game--2" id="game-2">
+
+          <div class="game__sprite">
+            <div class="game__crop">
+              <img
+                class="game__img"
+                src="https://www.figma.com/api/mcp/asset/a10645c8-f3a6-4f9c-8744-56247fa363cf.png"
+                alt="Illustration of fair game 2">
+            </div>
+          </div>
+
+          <a
+            class="game__link"
+            href="DuaThuyen.html"
+            aria-label="Play Boat Race">
+            BOAT RACE
+          </a>
+
+        </article>
+
+        <!-- =====================================================
+             GAME 3
+             ===================================================== -->
+        <article class="game game--3" id="game-3">
+
+          <div class="game__sprite">
+            <div class="game__crop">
+              <img
+                class="game__img"
+                src="https://www.figma.com/api/mcp/asset/b37c272c-2bd3-4dc8-890f-e45fb6e82c27.png"
+                alt="Illustration of fair game 3">
+            </div>
+          </div>
+
+          <a
+            class="game__link"
+            href="NhaySap.html"
+            aria-label="Play Bamboo Dance">
+            BAMBOO DANCE
+          </a>
+
+        </article>
+
+        <!-- =====================================================
+             GAME 4
+             ===================================================== -->
+        <article class="game game--4" id="game-4">
+
+          <div class="game__sprite">
+            <div class="game__crop">
+              <img
+                class="game__img"
+                src="https://www.figma.com/api/mcp/asset/648af8bb-13a0-4c83-bac0-3a1bb23313f0.png"
+                alt="Illustration of fair game 4">
+            </div>
+          </div>
+
+          <a
+            class="game__link"
+            href="NemCon.html"
+            aria-label='Play Throwing "Con"'>
+            THROWING "CON"
+          </a>
+
+        </article>
+
+        <!-- =====================================================
+             GAME 5
+             ===================================================== -->
+        <article class="game game--5" id="game-5">
+
+          <div class="game__sprite">
+            <div class="game__crop">
+              <img
+                class="game__img"
+                src="https://www.figma.com/api/mcp/asset/2d4b2c94-0ff0-4374-aa95-b09d45ac7ea8.png"
+                alt="Illustration of fair game 5">
+            </div>
+          </div>
+
+          <a
+            class="game__link"
+            href="cuopcau.html"
+            aria-label="Play Ball Snatching">
+            BALL SNATCHING
+          </a>
+
+        </article>
+
+        <!-- =====================================================
+             STAR
+             ===================================================== -->
+        <a class="star" href="Information.html" aria-label="Hidden star found">
+
+          <span class="star__crop">
+            <img
+              class="star__img"
+              src="https://www.figma.com/api/mcp/asset/79955ea1-f7d1-4431-9b21-1d60de9325d8.png"
+              alt="Golden pixel-art star sitting on the mountain peak">
+          </span>
+
+        </a>
+
+      </section>
+    </main>
+
+  </div>
+
+  <script>
+    (function () {
+      var toggle = document.querySelector('.nav__toggle');
+      var menu = document.getElementById('nav-menu');
+
+      function setOpen(open) {
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute(
+          'aria-label',
+          open ? 'Close navigation menu' : 'Open navigation menu'
+        );
+
+        menu.classList.toggle('nav__menu--open', open);
+      }
+
+      toggle.addEventListener('click', function () {
+        setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+      });
+
+      menu.addEventListener('click', function (event) {
+        if (event.target.closest('a')) {
+          setOpen(false);
+        }
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+          setOpen(false);
+        }
+      });
+    })();
+
+    function toBottom() {
+      window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    window.onload = toBottom;
+  </script>
+
+</body>
+</html>

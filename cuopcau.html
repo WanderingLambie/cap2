@@ -1,0 +1,2289 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Nhảy Sập</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+            padding: 0;
+
+            background: #253525;
+
+            font-family: "KiwiSoda", "Pixel-love";
+
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            min-height: 100vh;
+        }
+
+
+        /* =========================================
+           KHUNG GAME
+        ========================================= */
+
+        .game-container {
+
+            position: relative;
+
+            width: 1000px;
+            height: 600px;
+
+            overflow: hidden;
+
+            border: 4px solid white;
+
+            border-radius: 15px;
+
+            background-image:
+                url("game 3 land.png");
+
+            background-size: 100% 100%;
+
+            background-position: center;
+
+            background-repeat: no-repeat;
+
+            user-select: none;
+        }
+
+
+        /* LỚP TỐI NHẸ */
+
+        .game-container::before {
+
+            content: "";
+
+            position: absolute;
+
+            left: 0;
+            top: 0;
+
+            width: 100%;
+            height: 100%;
+
+            background:
+                rgba(0, 0, 0, 0.05);
+
+            pointer-events: none;
+
+            z-index: 1;
+        }
+
+
+        /* =========================================
+           MENU ĐẦU GAME
+        ========================================= */
+
+        .start-menu {
+
+            position: absolute;
+
+            left: 0;
+            top: 0;
+
+            width: 100%;
+            height: 100%;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+            align-items: center;
+
+            gap: 18px;
+
+            background:
+                rgba(0, 0, 0, 0.58);
+
+            z-index: 2000;
+        }
+
+
+        .start-menu-title {
+
+            margin-bottom: 10px;
+
+            color: white;
+
+            font-size: 56px;
+
+            font-weight: bold;
+
+            text-shadow:
+                3px 3px 6px black;
+        }
+
+
+        .menu-button {
+
+            width: 230px;
+            height: 60px;
+
+            border: 3px solid white;
+
+            border-radius: 12px;
+
+            background:
+                rgba(0, 0, 0, 0.82);
+
+            color: white;
+
+            font-size: 26px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            text-decoration: none;
+
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            transition:
+                transform 0.15s ease,
+                background 0.15s ease;
+        }
+
+
+        #playButton {
+
+            font-family: "KiwiSoda", "pixel-love";
+        }
+
+
+        .menu-button:hover {
+
+            transform: scale(1.05);
+
+            background:
+                rgba(255, 255, 255, 0.2);
+        }
+
+
+        .menu-button:active {
+
+            transform: scale(0.98);
+        }
+
+
+        /* =========================================
+           ĐẾM NGƯỢC 3 - 2 - 1
+        ========================================= */
+
+        .countdown-overlay {
+
+            position: absolute;
+
+            left: 0;
+            top: 0;
+
+            width: 100%;
+            height: 100%;
+
+            display: none;
+
+            justify-content: center;
+            align-items: center;
+
+            background:
+                rgba(0, 0, 0, 0.25);
+
+            z-index: 1900;
+
+            pointer-events: none;
+        }
+
+
+        .countdown-number {
+
+            color: white;
+
+            font-size: 150px;
+
+            font-weight: bold;
+
+            line-height: 1;
+
+            text-shadow:
+                5px 5px 10px black;
+
+            animation:
+                countdownPop 0.9s ease-in-out;
+        }
+
+
+        @keyframes countdownPop {
+
+            0% {
+
+                transform: scale(1.5);
+
+                opacity: 0;
+            }
+
+            25% {
+
+                opacity: 1;
+            }
+
+            100% {
+
+                transform: scale(1);
+
+                opacity: 1;
+            }
+        }
+
+
+        /* =========================================
+           SCORE
+        ========================================= */
+
+        .score {
+
+            position: absolute;
+
+            top: 20px;
+            left: 20px;
+
+            padding: 12px 20px;
+
+            background:
+                rgba(0, 0, 0, 0.85);
+
+            color: white;
+
+            border-radius: 8px;
+
+            font-size: 24px;
+
+            font-weight: bold;
+
+            z-index: 50;
+        }
+
+
+        /* =========================================
+           NHÂN VẬT
+        ========================================= */
+
+        .player {
+
+            position: absolute;
+
+            left: 35px;
+
+            top: 150px;
+
+            width: 240px;
+
+            height: 270px;
+
+            background-image:
+                url("main char cuop cau.png");
+
+            background-size: contain;
+
+            background-position:
+                center center;
+
+            background-repeat: no-repeat;
+
+            background-color:
+                transparent;
+
+            border: none;
+
+            border-radius: 0;
+
+            box-shadow: none;
+
+            z-index: 10;
+
+            transition:
+                top 0.18s ease;
+        }
+
+
+        /* =========================================
+           HITBOX NGƯỜI CHƠI
+        ========================================= */
+
+        .player-hitbox {
+
+            position: absolute;
+
+            width: 46px;
+
+            height: 100px;
+
+            left: 50%;
+
+            top: 50%;
+
+            transform:
+                translate(-50%, -50%);
+
+            border:
+                2px solid red;
+
+            background:
+                rgba(255, 0, 0, 0.08);
+
+            visibility: hidden;
+
+            pointer-events: none;
+
+            z-index: 100;
+        }
+
+
+        /* =========================================
+           ĐÁ
+        ========================================= */
+
+        .obstacle {
+
+            position: absolute;
+
+            left: 1100px;
+
+            top: 0;
+
+            width: 160px;
+
+            height: 180px;
+
+            background-image:
+                url("ROCKSS.png");
+
+            background-size: contain;
+
+            background-position:
+                center bottom;
+
+            background-repeat: no-repeat;
+
+            background-color:
+                transparent;
+
+            border: none;
+
+            box-shadow: none;
+
+            z-index: 9;
+        }
+
+
+        /* =========================================
+           HITBOX ĐÁ
+        ========================================= */
+
+        .obstacle-hitbox {
+
+            position: absolute;
+
+            left: 30px;
+
+            top: 25px;
+
+            width: 100px;
+
+            height: 145px;
+
+            border:
+                2px solid red;
+
+            background:
+                rgba(255, 0, 0, 0.08);
+
+            visibility: hidden;
+
+            pointer-events: none;
+
+            z-index: 100;
+        }
+
+
+        /* =========================================
+           HIỂN THỊ HITBOX
+        ========================================= */
+
+        .show-hitbox
+        .player-hitbox {
+
+            visibility: visible;
+        }
+
+
+        .show-hitbox
+        .obstacle-hitbox {
+
+            visibility: visible;
+        }
+
+
+        /* =========================================
+           WIN ITEM
+        ========================================= */
+
+        .win-item {
+
+            position: absolute;
+
+            left: 1100px;
+
+            top: 250px;
+
+            width: 70px;
+
+            height: 70px;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle,
+                    #fff7a0 0%,
+                    #ffd700 45%,
+                    #d89b00 100%
+                );
+
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            font-size: 38px;
+
+            z-index: 20;
+
+            box-shadow:
+                0 0 15px #ffd700,
+                0 0 30px
+                rgba(255, 215, 0, 0.8);
+
+            animation:
+                pulse 1s infinite alternate;
+        }
+
+
+        @keyframes pulse {
+
+            from {
+
+                transform:
+                    scale(0.95);
+            }
+
+            to {
+
+                transform:
+                    scale(1.05);
+            }
+        }
+
+
+        /* =========================================
+           HALO
+        ========================================= */
+
+        .halo-obstacle {
+
+            position: absolute;
+
+            left: 1100px;
+
+            top: 0;
+
+            width: 160px;
+
+            height: 180px;
+
+            background:
+                rgba(255, 255, 255, 0.85);
+
+            border:
+                4px solid white;
+
+            border-radius: 20px;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            color: #222;
+
+            font-size: 28px;
+
+            font-weight: bold;
+
+            z-index: 21;
+
+            box-shadow:
+                0 0 15px white,
+                0 0 30px
+                rgba(255, 255, 255, 0.8);
+        }
+
+
+        /* =====================================================
+           GAME OVER / YOU WIN / YOU LOSE
+           
+           CƠ CHẾ MỚI GIỐNG BÀI ĐUA THUYỀN
+           
+           KHÔNG CÒN:
+           - GAME OVER
+           - YOU WIN! 🏆
+           - Điểm của bạn
+           - nút Chơi lại HTML
+        ===================================================== */
+
+        .game-over {
+
+            position: absolute;
+
+            left: 0;
+            top: 0;
+
+            width: 100%;
+            height: 100%;
+
+            display: none;
+
+            justify-content: center;
+            align-items: center;
+
+            background: transparent;
+
+            z-index: 1000;
+
+            pointer-events: auto;
+
+            overflow: hidden;
+        }
+
+
+        /* =====================================================
+           RESULT CARD
+
+           PNG GỐC:
+
+           2048 × 819
+
+           Giữ đúng tỷ lệ ảnh.
+        ===================================================== */
+
+        .result-card {
+
+            position: absolute;
+
+            /*
+                Kích thước hiển thị toàn bộ PNG
+            */
+
+            width: 968px;
+            height: 387px;
+
+            /*
+                Căn ảnh trong game 1000 × 600
+            */
+
+            left: -117.53px;
+            top: 129.20px;
+
+            margin: 0;
+            padding: 0;
+
+            background-color: transparent;
+
+            background-position:
+                left top;
+
+            background-repeat:
+                no-repeat;
+
+            /*
+                Không kéo méo PNG
+            */
+
+            background-size:
+                968px 387px;
+
+            border: none;
+
+            box-shadow: none;
+
+            flex-shrink: 0;
+
+            z-index: 10000;
+
+            pointer-events: auto;
+        }
+
+
+        /* =====================================================
+           YOU WIN
+        ===================================================== */
+
+        .result-card.win {
+
+            background-image:
+                url("you_win_screen.png");
+        }
+
+
+        /* =====================================================
+           YOU LOSE
+
+           Tên file đang dùng:
+
+           you_lose_screen.png
+        ===================================================== */
+
+        .result-card.lose {
+
+            background-image:
+                url("you_lose_screen.png");
+        }
+
+
+        /* =====================================================
+           NÚT RETURN
+
+           Theo vị trí nút trong PNG gốc
+        ===================================================== */
+
+        .restart-return {
+
+            position: absolute;
+
+            left: 581px;
+            top: 212px;
+
+            width: 82px;
+            height: 43px;
+
+            margin: 0;
+            padding: 0;
+
+            border: none;
+
+            background: transparent;
+
+            cursor: pointer;
+
+            outline: none;
+
+            z-index: 10001;
+
+            appearance: none;
+
+            box-shadow: none;
+        }
+
+
+        /* =====================================================
+           NÚT PLAY AGAIN?
+
+           Theo vị trí nút trong PNG gốc
+        ===================================================== */
+
+        .restart {
+
+            position: absolute;
+
+            left: 528px;
+            top: 262px;
+
+            width: 182px;
+            height: 51px;
+
+            margin: 0;
+            padding: 0;
+
+            border: none;
+
+            background: transparent;
+
+            cursor: pointer;
+
+            outline: none;
+
+            z-index: 10001;
+
+            appearance: none;
+
+            box-shadow: none;
+        }
+
+
+        /* =====================================================
+           KHÔNG HIỆN KHUNG HTML CỦA BUTTON
+        ===================================================== */
+
+        .restart:hover,
+        .restart-return:hover {
+
+            background: transparent;
+
+            border: none;
+
+            box-shadow: none;
+        }
+
+
+        .restart:focus,
+        .restart-return:focus {
+
+            outline: none;
+
+            border: none;
+        }
+
+
+        .restart:active,
+        .restart-return:active {
+
+            transform: none;
+
+            background: transparent;
+        }
+
+
+        /* =========================================
+           CONTROLS
+        ========================================= */
+
+        .controls {
+
+            position: absolute;
+
+            left: 0;
+
+            bottom: 15px;
+
+            width: 100%;
+
+            text-align: center;
+
+            color: white;
+
+            font-size: 18px;
+
+            text-shadow:
+                1px 1px 3px black;
+
+            z-index: 50;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div
+    class="game-container"
+    id="game"
+>
+
+
+    <!-- =========================================
+         MENU ĐẦU GAME
+    ========================================= -->
+
+    <div
+        class="start-menu"
+        id="startMenu"
+    >
+
+        <div class="start-menu-title">
+            Ball snatching
+        </div>
+
+
+        <button
+            class="menu-button"
+            id="playButton"
+            type="button"
+        >
+            PLAY
+        </button>
+
+
+        <!--
+            THAY href="#" BẰNG ĐƯỜNG DẪN WEBSITE
+            CỦA BẠN SAU.
+        -->
+
+        <a
+            class="menu-button"
+            id="menuReturn"
+            href="maychu.html"
+        >
+            RETURN
+        </a>
+
+    </div>
+
+
+    <!-- =========================================
+         ĐẾM NGƯỢC
+    ========================================= -->
+
+    <div
+        class="countdown-overlay"
+        id="countdownOverlay"
+    >
+
+        <div
+            class="countdown-number"
+            id="countdownNumber"
+        >
+            3
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         SCORE
+    ========================================= -->
+
+    <div class="score">
+
+        Score:
+        <span id="score">0</span>
+
+    </div>
+
+
+    <!-- =========================================
+         NGƯỜI CHƠI
+    ========================================= -->
+
+    <div
+        class="player"
+        id="player"
+    >
+
+        <div
+            class="player-hitbox"
+        ></div>
+
+    </div>
+
+
+    <!-- =========================================
+         ĐÁ 1
+    ========================================= -->
+
+    <div
+        class="obstacle"
+        id="obstacle"
+    >
+
+        <div
+            class="obstacle-hitbox"
+        ></div>
+
+    </div>
+
+
+    <!-- =========================================
+         ĐÁ 2
+    ========================================= -->
+
+    <div
+        class="obstacle"
+        id="obstacle2"
+    >
+
+        <div
+            class="obstacle-hitbox"
+        ></div>
+
+    </div>
+
+
+    <!-- =========================================
+         WIN ITEM
+    ========================================= -->
+
+    <div
+        class="win-item"
+        id="winItem"
+    >
+        🏆
+    </div>
+
+
+    <!-- =========================================
+         HALO
+    ========================================= -->
+
+    <div
+        class="halo-obstacle"
+        id="haloObstacle"
+    >
+        HALO
+    </div>
+
+
+    <!-- =================================================
+         GAME OVER MỚI
+         
+         ẢNH PNG SẼ HIỆN Ở ĐÂY
+    ================================================= -->
+
+    <div
+        class="game-over"
+        id="gameOver"
+    >
+
+        <div
+            class="result-card"
+            id="resultCard"
+        >
+
+            <!-- RETURN -->
+
+            <button
+                class="restart-return"
+                id="restartReturn"
+                type="button"
+                aria-label="Return"
+            ></button>
+
+
+            <!-- PLAY AGAIN -->
+
+            <button
+                class="restart"
+                id="restart"
+                type="button"
+                aria-label="Play Again"
+            ></button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         HƯỚNG DẪN
+    ========================================= -->
+
+    <div class="controls">
+
+        W / ↑ : Move Up
+
+        &nbsp; | &nbsp;
+
+        S / ↓ : Move Down
+
+        &nbsp; | &nbsp;
+
+        H : Toggle Hitbox
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+    /* =========================================
+       ELEMENT
+    ========================================= */
+
+    const game =
+        document.getElementById("game");
+
+
+    const startMenu =
+        document.getElementById(
+            "startMenu"
+        );
+
+
+    const playButton =
+        document.getElementById(
+            "playButton"
+        );
+
+
+    const countdownOverlay =
+        document.getElementById(
+            "countdownOverlay"
+        );
+
+
+    const countdownNumber =
+        document.getElementById(
+            "countdownNumber"
+        );
+
+
+    const player =
+        document.getElementById("player");
+
+
+    const obstacle1 =
+        document.getElementById("obstacle");
+
+
+    const obstacle2 =
+        document.getElementById("obstacle2");
+
+
+    const winItem =
+        document.getElementById("winItem");
+
+
+    const haloObstacle =
+        document.getElementById(
+            "haloObstacle"
+        );
+
+
+    const scoreElement =
+        document.getElementById("score");
+
+
+    const gameOver =
+        document.getElementById("gameOver");
+
+
+    /*
+        KHÔNG CÒN gameOverTitle
+        KHÔNG CÒN finalScore
+    */
+
+
+    const resultCard =
+        document.getElementById(
+            "resultCard"
+        );
+
+
+    const restartButton =
+        document.getElementById(
+            "restart"
+        );
+
+
+    const restartReturn =
+        document.getElementById(
+            "restartReturn"
+        );
+
+
+    /* =========================================
+       HITBOX
+    ========================================= */
+
+    const playerHitbox =
+        player.querySelector(
+            ".player-hitbox"
+        );
+
+
+    /* =========================================
+       CẤU HÌNH LÀN
+    ========================================= */
+
+    const lanes = [
+        -40,
+        150,
+        340
+    ];
+
+
+    let playerLane = 1;
+
+
+    /* =========================================
+       TRẠNG THÁI GAME
+    ========================================= */
+
+    let score = 0;
+
+    /*
+        Ban đầu game chưa chạy.
+        Người chơi phải bấm PLAY trước.
+    */
+
+    let gameRunning = false;
+
+    let showHitbox = false;
+
+    let animationId = null;
+
+    let countdownTimer = null;
+
+
+    /* =========================================
+       TỐC ĐỘ
+    ========================================= */
+
+    const obstacleSpeed = 7;
+
+    const winItemSpeed = 7;
+
+
+    /* =========================================
+       OBSTACLE
+    ========================================= */
+
+    let obstacleLanes = [
+        0,
+        2
+    ];
+
+
+    let obstacleXs = [
+        1050,
+        1450
+    ];
+
+
+    /* =========================================
+       WIN ITEM
+    ========================================= */
+
+    let winItemVisible = false;
+
+    let winItemX = 1100;
+
+    let winItemLane = 1;
+
+    let winTimer = 0;
+
+    let nextWinTime =
+        20000 +
+        Math.random() * 10000;
+
+
+    /* =========================================
+       HALO
+    ========================================= */
+
+    let haloVisible = false;
+
+    let haloX = 1100;
+
+    let haloLane = 0;
+
+
+    /* =========================================
+       ĐẶT VỊ TRÍ NGƯỜI CHƠI
+    ========================================= */
+
+    function updatePlayerPosition() {
+
+        player.style.top =
+            lanes[playerLane] + "px";
+    }
+
+
+    /* =========================================
+       ĐẶT VỊ TRÍ ĐÁ
+    ========================================= */
+
+    function updateObstaclePosition(
+        obstacle,
+        x,
+        lane
+    ) {
+
+        obstacle.style.left =
+            x + "px";
+
+
+        obstacle.style.top =
+            lanes[lane] + "px";
+    }
+
+
+    /* =========================================
+       KHỞI TẠO
+    ========================================= */
+
+    updatePlayerPosition();
+
+
+    updateObstaclePosition(
+        obstacle1,
+        obstacleXs[0],
+        obstacleLanes[0]
+    );
+
+
+    updateObstaclePosition(
+        obstacle2,
+        obstacleXs[1],
+        obstacleLanes[1]
+    );
+
+
+    winItem.style.display =
+        "none";
+
+
+    haloObstacle.style.display =
+        "none";
+
+
+    /* =========================================
+       DI CHUYỂN NHÂN VẬT
+    ========================================= */
+
+    function movePlayer(direction) {
+
+        if (!gameRunning) {
+
+            return;
+        }
+
+
+        if (
+            direction === "up"
+        ) {
+
+            if (playerLane > 0) {
+
+                playerLane--;
+            }
+        }
+
+
+        if (
+            direction === "down"
+        ) {
+
+            if (
+                playerLane <
+                lanes.length - 1
+            ) {
+
+                playerLane++;
+            }
+        }
+
+
+        updatePlayerPosition();
+    }
+
+
+    /* =========================================
+       BÀN PHÍM
+    ========================================= */
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+
+            if (
+                event.key === "w" ||
+                event.key === "W" ||
+                event.key === "ArrowUp"
+            ) {
+
+                event.preventDefault();
+
+                movePlayer("up");
+
+                return;
+            }
+
+
+            if (
+                event.key === "s" ||
+                event.key === "S" ||
+                event.key === "ArrowDown"
+            ) {
+
+                event.preventDefault();
+
+                movePlayer("down");
+
+                return;
+            }
+
+
+            if (
+                event.key === "h" ||
+                event.key === "H"
+            ) {
+
+                if (!gameRunning) {
+
+                    return;
+                }
+
+
+                showHitbox =
+                    !showHitbox;
+
+
+                if (showHitbox) {
+
+                    game.classList.add(
+                        "show-hitbox"
+                    );
+
+                } else {
+
+                    game.classList.remove(
+                        "show-hitbox"
+                    );
+                }
+
+            }
+
+        }
+    );
+
+
+    /* =========================================
+       LẤY RECT HITBOX NGƯỜI CHƠI
+    ========================================= */
+
+    function getPlayerHitboxRect() {
+
+        return playerHitbox
+            .getBoundingClientRect();
+    }
+
+
+    /* =========================================
+       LẤY RECT HITBOX ĐÁ
+    ========================================= */
+
+    function getObstacleHitboxRect(
+        obstacle
+    ) {
+
+        const hitbox =
+            obstacle.querySelector(
+                ".obstacle-hitbox"
+            );
+
+
+        return hitbox
+            .getBoundingClientRect();
+    }
+
+
+    /* =========================================
+       KIỂM TRA VA CHẠM
+    ========================================= */
+
+    function checkCollision(
+        rect1,
+        rect2
+    ) {
+
+        return !(
+            rect1.right <=
+                rect2.left ||
+
+            rect1.left >=
+                rect2.right ||
+
+            rect1.bottom <=
+                rect2.top ||
+
+            rect1.top >=
+                rect2.bottom
+        );
+    }
+
+
+    /* =========================================
+       KIỂM TRA ĐÁ
+    ========================================= */
+
+    function checkObstacleCollision(
+        obstacle
+    ) {
+
+        const playerRect =
+            getPlayerHitboxRect();
+
+
+        const obstacleRect =
+            getObstacleHitboxRect(
+                obstacle
+            );
+
+
+        return checkCollision(
+            playerRect,
+            obstacleRect
+        );
+    }
+
+
+    /* =========================================
+       KIỂM TRA WIN ITEM
+    ========================================= */
+
+    function checkWinCollision() {
+
+        const playerRect =
+            getPlayerHitboxRect();
+
+
+        const winRect =
+            winItem.getBoundingClientRect();
+
+
+        return checkCollision(
+            playerRect,
+            winRect
+        );
+    }
+
+
+    /* =====================================================
+       GAME OVER MỚI
+       
+       WIN:
+       Hiện you_win_screen.png
+
+       LOSE:
+       Hiện you_lose_screen.png
+       
+       Không thay đổi cơ chế va chạm.
+    ===================================================== */
+
+    function endGame(win) {
+
+        if (!gameRunning) {
+
+            return;
+        }
+
+
+        gameRunning = false;
+
+
+        if (
+            animationId !== null
+        ) {
+
+            cancelAnimationFrame(
+                animationId
+            );
+
+            animationId = null;
+        }
+
+
+        /*
+            Xóa trạng thái cũ
+            trước khi thêm trạng thái mới.
+        */
+
+        resultCard.classList.remove(
+            "win",
+            "lose"
+        );
+
+
+        if (win) {
+
+            resultCard.classList.add(
+                "win"
+            );
+
+        } else {
+
+            resultCard.classList.add(
+                "lose"
+            );
+        }
+
+
+        /*
+            Hiện màn hình kết quả
+        */
+
+        gameOver.style.display =
+            "flex";
+    }
+
+
+    /* =========================================
+       TÌM LÀN KHÁC VỚI VẬT CẢN CÒN LẠI
+    ========================================= */
+
+    function getSafeObstacleLane(
+        otherIndex
+    ) {
+
+        const possibleLanes = [];
+
+
+        for (
+            let i = 0;
+            i < lanes.length;
+            i++
+        ) {
+
+            if (
+                i === obstacleLanes[
+                    otherIndex
+                ]
+            ) {
+
+                continue;
+            }
+
+
+            possibleLanes.push(i);
+        }
+
+
+        return possibleLanes[
+            Math.floor(
+                Math.random() *
+                possibleLanes.length
+            )
+        ];
+    }
+
+
+    /* =========================================
+       RESET ĐÁ
+    ========================================= */
+
+    function resetObstacle(index) {
+
+        const otherIndex =
+            index === 0 ? 1 : 0;
+
+
+        obstacleXs[index] =
+            1050 +
+            Math.random() * 350;
+
+
+        obstacleLanes[index] =
+            getSafeObstacleLane(
+                otherIndex
+            );
+
+
+        const obstacle =
+            index === 0
+                ? obstacle1
+                : obstacle2;
+
+
+        updateObstaclePosition(
+            obstacle,
+            obstacleXs[index],
+            obstacleLanes[index]
+        );
+
+
+        score++;
+
+
+        scoreElement.textContent =
+            score;
+
+
+        /* =====================================
+           HALO NGẪU NHIÊN
+        ===================================== */
+
+        if (
+            !haloVisible &&
+            Math.random() < 0.001
+        ) {
+
+            haloVisible = true;
+
+
+            haloX =
+                obstacleXs[index];
+
+
+            haloLane =
+                obstacleLanes[index];
+
+
+            haloObstacle.style.left =
+                haloX + "px";
+
+
+            haloObstacle.style.top =
+                lanes[haloLane] + "px";
+
+
+            haloObstacle.style.display =
+                "flex";
+        }
+
+    }
+
+
+    /* =========================================
+       TẠO WIN ITEM
+    ========================================= */
+
+    function spawnWinItem() {
+
+        winItemVisible = true;
+
+
+        winItemX = 1050;
+
+
+        winItemLane =
+            Math.floor(
+                Math.random() *
+                lanes.length
+            );
+
+
+        winItem.style.left =
+            winItemX + "px";
+
+
+        winItem.style.top =
+            (
+                lanes[winItemLane] +
+                100
+            ) + "px";
+
+
+        winItem.style.display =
+            "flex";
+    }
+
+
+    /* =========================================
+       GAME LOOP
+    ========================================= */
+
+    let lastTime =
+        performance.now();
+
+
+    function gameLoop(currentTime) {
+
+        if (!gameRunning) {
+
+            return;
+        }
+
+
+        const deltaTime =
+            currentTime -
+            lastTime;
+
+
+        lastTime =
+            currentTime;
+
+
+        /* =====================================
+           ĐÁ 1
+        ===================================== */
+
+        obstacleXs[0] -=
+            obstacleSpeed;
+
+
+        obstacle1.style.left =
+            obstacleXs[0] + "px";
+
+
+        /* =====================================
+           ĐÁ 2
+        ===================================== */
+
+        obstacleXs[1] -=
+            obstacleSpeed;
+
+
+        obstacle2.style.left =
+            obstacleXs[1] + "px";
+
+
+        /* =====================================
+           RESET ĐÁ 1
+        ===================================== */
+
+        if (
+            obstacleXs[0] < -180
+        ) {
+
+            resetObstacle(0);
+        }
+
+
+        /* =====================================
+           RESET ĐÁ 2
+        ===================================== */
+
+        if (
+            obstacleXs[1] < -180
+        ) {
+
+            resetObstacle(1);
+        }
+
+
+        /* =====================================
+           VA CHẠM ĐÁ
+        ===================================== */
+
+        if (
+            checkObstacleCollision(
+                obstacle1
+            )
+        ) {
+
+            endGame(false);
+
+            return;
+        }
+
+
+        if (
+            checkObstacleCollision(
+                obstacle2
+            )
+        ) {
+
+            endGame(false);
+
+            return;
+        }
+
+
+        /* =====================================
+           WIN TIMER
+        ===================================== */
+
+        winTimer +=
+            deltaTime;
+
+
+        if (
+            !winItemVisible &&
+            winTimer >= nextWinTime
+        ) {
+
+            spawnWinItem();
+
+
+            winTimer = 0;
+
+
+            nextWinTime =
+                20000 +
+                Math.random() * 10000;
+        }
+
+
+        /* =====================================
+           WIN ITEM DI CHUYỂN
+        ===================================== */
+
+        if (
+            winItemVisible
+        ) {
+
+            winItemX -=
+                winItemSpeed;
+
+
+            winItem.style.left =
+                winItemX + "px";
+
+
+            if (
+                checkWinCollision()
+            ) {
+
+                /*
+                    ĂN 🏆
+                    → YOU WIN
+                */
+
+                endGame(true);
+
+                return;
+            }
+
+
+            if (
+                winItemX < -100
+            ) {
+
+                winItemVisible =
+                    false;
+
+
+                winItem.style.display =
+                    "none";
+            }
+
+        }
+
+
+        /* =====================================
+           HALO
+        ===================================== */
+
+        if (
+            haloVisible
+        ) {
+
+            haloX -=
+                obstacleSpeed;
+
+
+            haloObstacle.style.left =
+                haloX + "px";
+
+
+            const playerRect =
+                getPlayerHitboxRect();
+
+
+            const haloRect =
+                haloObstacle
+                    .getBoundingClientRect();
+
+
+            if (
+                checkCollision(
+                    playerRect,
+                    haloRect
+                )
+            ) {
+
+                haloVisible =
+                    false;
+
+
+                haloObstacle.style.display =
+                    "none";
+
+
+                score += 5;
+
+
+                scoreElement.textContent =
+                    score;
+            }
+
+
+            if (
+                haloX < -180
+            ) {
+
+                haloVisible =
+                    false;
+
+
+                haloObstacle.style.display =
+                    "none";
+            }
+
+        }
+
+
+        /* =====================================
+           TIẾP TỤC GAME
+        ===================================== */
+
+        animationId =
+            requestAnimationFrame(
+                gameLoop
+            );
+    }
+
+
+    /* =========================================
+       RESET GAME
+    ========================================= */
+
+    function resetGame(
+        startImmediately = true
+    ) {
+
+
+        if (
+            animationId !== null
+        ) {
+
+            cancelAnimationFrame(
+                animationId
+            );
+
+            animationId = null;
+        }
+
+
+        /* SCORE */
+
+        score = 0;
+
+
+        scoreElement.textContent =
+            "0";
+
+
+        /* PLAYER */
+
+        playerLane = 1;
+
+
+        updatePlayerPosition();
+
+
+        /* OBSTACLE */
+
+        obstacleLanes = [
+            0,
+            2
+        ];
+
+
+        obstacleXs = [
+            1050,
+            1450
+        ];
+
+
+        updateObstaclePosition(
+            obstacle1,
+            obstacleXs[0],
+            obstacleLanes[0]
+        );
+
+
+        updateObstaclePosition(
+            obstacle2,
+            obstacleXs[1],
+            obstacleLanes[1]
+        );
+
+
+        /* WIN ITEM */
+
+        winItemVisible =
+            false;
+
+
+        winItemX =
+            1100;
+
+
+        winItemLane =
+            1;
+
+
+        winTimer =
+            0;
+
+
+        nextWinTime =
+            20000 +
+            Math.random() * 10000;
+
+
+        winItem.style.display =
+            "none";
+
+
+        /* HALO */
+
+        haloVisible =
+            false;
+
+
+        haloX =
+            1100;
+
+
+        haloLane =
+            0;
+
+
+        haloObstacle.style.display =
+            "none";
+
+
+        /* =====================================
+           GAME OVER MỚI
+        ===================================== */
+
+        gameOver.style.display =
+            "none";
+
+
+        resultCard.classList.remove(
+            "win",
+            "lose"
+        );
+
+
+        /* =====================================
+           CHẠY LẠI
+        ===================================== */
+
+        gameRunning =
+            false;
+
+
+        lastTime =
+            performance.now();
+
+
+        if (startImmediately) {
+
+            gameRunning =
+                true;
+
+
+            animationId =
+                requestAnimationFrame(
+                    gameLoop
+                );
+        }
+    }
+
+
+    /* =========================================
+       ĐẾM NGƯỢC TRƯỚC KHI VÀO GAME
+    ========================================= */
+
+    function startCountdown() {
+
+        if (
+            countdownTimer !== null
+        ) {
+
+            clearInterval(
+                countdownTimer
+            );
+
+            countdownTimer = null;
+        }
+
+
+        /*
+            Reset toàn bộ trạng thái game
+            nhưng CHƯA cho game chạy.
+        */
+
+        resetGame(false);
+
+
+        startMenu.style.display =
+            "none";
+
+
+        countdownOverlay.style.display =
+            "flex";
+
+
+        let count = 3;
+
+
+        countdownNumber.textContent =
+            count;
+
+
+        /*
+            Gắn lại animation để số mới
+            có hiệu ứng mỗi lần xuất hiện.
+        */
+
+        countdownNumber.style.animation =
+            "none";
+
+
+        void countdownNumber.offsetWidth;
+
+
+        countdownNumber.style.animation =
+            "countdownPop 0.9s ease-in-out";
+
+
+        countdownTimer =
+            setInterval(
+                function() {
+
+                    count--;
+
+
+                    if (count > 0) {
+
+                        countdownNumber.textContent =
+                            count;
+
+
+                        countdownNumber.style.animation =
+                            "none";
+
+
+                        void countdownNumber.offsetWidth;
+
+
+                        countdownNumber.style.animation =
+                            "countdownPop 0.9s ease-in-out";
+
+
+                        return;
+                    }
+
+
+                    clearInterval(
+                        countdownTimer
+                    );
+
+
+                    countdownTimer =
+                        null;
+
+
+                    countdownOverlay.style.display =
+                        "none";
+
+
+                    /*
+                        Chính thức bắt đầu game
+                        sau khi đếm xong 3 giây.
+                    */
+
+                    gameRunning =
+                        true;
+
+
+                    lastTime =
+                        performance.now();
+
+
+                    animationId =
+                        requestAnimationFrame(
+                            gameLoop
+                        );
+
+                },
+                1000
+            );
+    }
+
+
+    /* =========================================
+       NÚT PLAY Ở MENU ĐẦU GAME
+    ========================================= */
+
+    playButton.addEventListener(
+        "click",
+        function() {
+
+            startCountdown();
+
+        }
+    );
+
+
+    /* =========================================
+       NÚT PLAY AGAIN
+    ========================================= */
+
+    restartButton.addEventListener(
+        "click",
+        function() {
+
+            resetGame();
+
+        }
+    );
+
+
+    /* =========================================
+       NÚT RETURN
+       
+       Giống cơ chế bài Đua Thuyền:
+       quay lại trạng thái game ban đầu.
+    ========================================= */
+
+    restartReturn.addEventListener(
+        "click",
+        function() {
+
+            resetGame();
+
+        }
+    );
+
+
+    /* =========================================
+       TRẠNG THÁI BAN ĐẦU
+    ========================================= */
+
+    /*
+        Hiển thị menu khi mở game.
+        Game chỉ bắt đầu sau khi bấm PLAY
+        và hoàn thành đếm ngược 3 - 2 - 1.
+    */
+
+    startMenu.style.display =
+        "flex";
+
+
+    countdownOverlay.style.display =
+        "none";
+
+
+    gameRunning =
+        false;
+
+</script>
+
+</body>
+
+</html>
