@@ -1,0 +1,1733 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>mifi keo co</title>
+
+    <style>
+
+        @font-face {
+            font-family: "KiwiSoda";
+            src: url("fonts/KIWISODA.woff2") format("woff2");
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            background: #253525;
+            overflow: hidden;
+            font-family: "KiwiSoda", "Pixel-love";
+        }
+
+
+        /* =========================================
+           KHUNG GAME
+        ========================================= */
+
+        .game-wrapper {
+            width: 100vw;
+            height: 100vh;
+
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        .game {
+            position: relative;
+
+            width: min(100vw, 765px);
+            height: min(100vh, 570px);
+
+            aspect-ratio: 765 / 570;
+
+            overflow: hidden;
+
+            background: #e9dfd1;
+        }
+
+
+        /* =========================================
+           CẢNH
+        ========================================= */
+
+        .background {
+            position: absolute;
+
+            left: 0;
+            top: 0;
+
+            width: 100%;
+            height: 100%;
+
+            z-index: 1;
+
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+
+        /* =========================================
+           DÂY
+        ========================================= */
+
+        .rope {
+            position: absolute;
+
+            left: 8%;
+
+            top: 68.25%;
+
+            width: 84%;
+
+            height: 8px;
+
+            z-index: 30;
+
+            background-size: 100% 100%;
+
+            background-position: center;
+
+            background-repeat: no-repeat;
+        }
+
+
+        .rope.default-rope {
+            background: #a17b60;
+        }
+
+
+        /* =========================================
+           VẬT GIỮA DÂY
+        ========================================= */
+
+        .marker {
+            position: absolute;
+
+            left: 50%;
+
+            top: 68.25%;
+
+            width: 50px;
+            height: 60px;
+
+            transform:
+                translate(-50%, -50%)
+                scale(4);
+
+            z-index: 45;
+
+            transition:
+                left 0.05s linear;
+        }
+
+
+        .marker img {
+            width: 100%;
+            height: 100%;
+
+            object-fit: contain;
+
+            display: block;
+
+            user-select: none;
+            pointer-events: none;
+        }
+
+
+        /* =========================================
+           NHÂN VẬT
+        ========================================= */
+
+        .person {
+            position: absolute;
+
+            width: 110px;
+            height: 220px;
+
+            bottom: 5.8%;
+
+            z-index: 20;
+
+            transform-origin: 50% 100%;
+
+            --person-scale: 6.0;
+
+            transform:
+                translateX(0)
+                rotate(0deg)
+                scale(var(--person-scale));
+
+            transition:
+                transform 0.08s ease;
+        }
+
+
+        .person img {
+            width: 100%;
+            height: 100%;
+
+            object-fit: contain;
+
+            object-position: center bottom;
+
+            display: block;
+
+            user-select: none;
+            pointer-events: none;
+        }
+
+
+        /* =========================================
+           ĐỘI XANH
+        ========================================= */
+
+        .blue1 {
+            left: 8%;
+        }
+
+
+        .blue2 {
+            left: 10%;
+        }
+
+
+        /* =========================================
+           ĐỘI ĐỎ
+        ========================================= */
+
+        .red1 {
+            right: 0%;
+        }
+
+
+        .red2 {
+            right: -13%;
+        }
+
+
+        /* =========================================
+           KHI ĐỘI XANH KÉO
+        ========================================= */
+
+        .blue.pull {
+            transform:
+                translateX(-5px)
+                rotate(-1deg)
+                scale(var(--person-scale));
+        }
+
+
+        /* =========================================
+           KHI ĐỘI ĐỎ KÉO
+        ========================================= */
+
+        .red.pull {
+            transform:
+                translateX(5px)
+                rotate(1deg)
+                scale(var(--person-scale));
+        }
+
+
+        /* =========================================
+           RUNG NHÂN VẬT
+        ========================================= */
+
+        .person.pulling img {
+            animation:
+                pulling
+                0.18s
+                infinite
+                alternate;
+        }
+
+
+        @keyframes pulling {
+
+            from {
+                transform:
+                    translateX(0);
+            }
+
+            to {
+                transform:
+                    translateX(-1px);
+            }
+
+        }
+
+
+        /* =========================================
+           HƯỚNG DẪN
+        ========================================= */
+
+        .hint {
+            position: absolute;
+
+            left: 50%;
+
+            bottom: 10px;
+
+            transform:
+                translateX(-50%);
+
+            color:
+                rgba(255,255,255,0.75);
+
+            font-size: 12px;
+
+            z-index: 80;
+        }
+
+
+        /* =================================================
+           GAME OVER
+        ================================================= */
+
+        .game-result-screen {
+
+            position: absolute;
+
+            left: 0;
+            top: 0;
+
+            width: 100%;
+            height: 100%;
+
+            background:
+                rgba(0, 0, 0, 0.80);
+
+            display: none;
+
+            justify-content: center;
+            align-items: center;
+
+            z-index: 1000;
+
+            overflow: hidden;
+        }
+
+
+        .game-result-screen.show {
+            display: flex;
+        }
+
+
+        /* =================================================
+           KHUNG CHỨA PNG
+
+           QUAN TRỌNG:
+           KHUNG NÀY LUÔN ĐƯỢC CĂN GIỮA GAME
+        ================================================= */
+
+        .result-image-wrapper {
+
+            position: relative;
+
+            /*
+               PNG hiển thị lớn hơn bản cũ
+               nhưng KHÔNG vượt quá màn hình
+            */
+
+            width: min(860px, 94vw);
+            height: min(610px, 88vh);
+
+            aspect-ratio: 614 / 436;
+
+            flex-shrink: 0;
+
+            overflow: hidden;
+
+            /*
+               Căn giữa tuyệt đối
+            */
+
+            left: 50%;
+            top: 50%;
+
+            transform:
+                translate(-50%, -50%);
+        }
+
+
+        /* =================================================
+           PNG KẾT QUẢ
+
+           Dùng COVER để phần thừa của PNG
+           không làm khung bị lệch.
+        ================================================= */
+
+        .result-image {
+
+            position: absolute;
+
+            left: 0;
+            top: 0;
+
+            width: 100%;
+            height: 100%;
+
+            display: block;
+
+            user-select: none;
+
+            pointer-events: none;
+
+            /*
+               Giữ đúng tỷ lệ hình.
+            */
+
+            object-fit: cover;
+
+            /*
+               PNG của bạn bị lệch nội dung
+               về phía bên phải.
+
+               81% đưa phần khung xanh
+               về chính giữa màn hình.
+            */
+
+            object-position: 81% center;
+        }
+
+
+        /* =================================================
+           VÙNG CLICK RETURN
+
+           KHÔNG CÓ NÚT HTML HIỂN THỊ
+        ================================================= */
+
+        .return-hitbox {
+
+            position: absolute;
+
+            /*
+               Tọa độ theo TỶ LỆ PNG
+            */
+
+            left: 50%;
+
+            top: 58%;
+
+            width: 15%;
+
+            height: 12%;
+
+            transform:
+                translate(-50%, -50%);
+
+            background: transparent;
+
+            border: none;
+
+            padding: 0;
+
+            margin: 0;
+
+            cursor: pointer;
+
+            z-index: 20;
+
+            /*
+               Không hiện nền khi hover
+            */
+
+            appearance: none;
+
+            outline: none;
+        }
+
+
+        /* =================================================
+           VÙNG CLICK PLAY AGAIN
+        ================================================= */
+
+        .play-again-hitbox {
+
+            position: absolute;
+
+            /*
+               Tọa độ theo TỶ LỆ PNG
+            */
+
+            left: 50%;
+
+            top: 72%;
+
+            width: 34%;
+
+            height: 14%;
+
+            transform:
+                translate(-50%, -50%);
+
+            background: transparent;
+
+            border: none;
+
+            padding: 0;
+
+            margin: 0;
+
+            cursor: pointer;
+
+            z-index: 20;
+
+            /*
+               Không hiện nền khi hover
+            */
+
+            appearance: none;
+
+            outline: none;
+        }
+
+
+        /*
+           KHÔNG HIỆN BẤT KỲ NỀN HTML
+           KHI DI CHUỘT VÀO
+        */
+
+        .return-hitbox:hover,
+        .play-again-hitbox:hover,
+        .return-hitbox:focus,
+        .play-again-hitbox:focus,
+        .return-hitbox:active,
+        .play-again-hitbox:active {
+
+            background: transparent;
+
+            outline: none;
+
+            box-shadow: none;
+        }
+
+
+
+        /* MENU ĐẦU GAME + COUNTDOWN + TIMER 30 GIÂY */
+        .start-menu{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:18px;background:rgba(0,0,0,.62);z-index:3000}
+        .menu-button{width:230px;height:64px;border:3px solid white;border-radius:12px;background:rgba(0,0,0,.78);color:white;font-size:30px;font-weight:bold;cursor:pointer;text-decoration:none;display:flex;justify-content:center;align-items:center;text-shadow:2px 2px 4px #000}
+        .menu-button:hover{background:rgba(255,255,255,.18)}
+        #menuPlay{font-family:"KiwiSoda", sans-serif}
+        .countdown{position:absolute;inset:0;display:none;justify-content:center;align-items:center;background:rgba(0,0,0,.38);color:white;font-size:150px;font-weight:bold;text-shadow:4px 4px 10px #000;z-index:2900}
+        .game-timer{position:absolute;left:50%;top:18px;transform:translateX(-50%);min-width:150px;padding:7px 18px;background:rgba(0,0,0,.72);border:3px solid white;border-radius:14px;color:white;font-size:27px;font-weight:bold;text-align:center;z-index:500;display:none;text-shadow:2px 2px 4px #000}
+        .hourglass{display:inline-block;margin-right:8px;transform-origin:50% 50%;animation:hourglassWobble .9s ease-in-out infinite}
+        @keyframes hourglassWobble{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
+        .game-timer.warning{border-color:#ff3333}
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+        @media (max-aspect-ratio: 765 / 570) {
+
+            .game {
+
+                width: 100vw;
+
+                height: auto;
+
+                aspect-ratio: 765 / 570;
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            .result-image-wrapper {
+
+                width: 96vw;
+
+                height: auto;
+
+                aspect-ratio: 614 / 436;
+            }
+
+        }
+
+
+        @media (max-height: 600px) {
+
+            .result-image-wrapper {
+
+                height: 94vh;
+
+                width: auto;
+
+                aspect-ratio: 614 / 436;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="game-wrapper">
+
+
+    <div class="game">
+
+        <div class="start-menu" id="startMenu">
+            <button class="menu-button" id="menuPlay" type="button">PLAY</button>
+            <a class="menu-button" id="menuReturn" href="maychu.html">RETURN</a>
+        </div>
+
+        <div class="countdown" id="countdown" aria-live="assertive">3</div>
+
+        <div class="game-timer" id="gameTimer">
+            <span class="hourglass">⏳</span><span id="timerText">30s</span>
+        </div>
+
+
+        <!-- =====================================
+             CẢNH
+        ====================================== -->
+
+        <div
+            class="background"
+            id="background">
+        </div>
+
+
+        <!-- =====================================
+             DÂY
+        ====================================== -->
+
+        <div
+            class="rope"
+            id="rope">
+        </div>
+
+
+        <!-- =====================================
+             VẬT GIỮA
+        ====================================== -->
+
+        <div
+            class="marker"
+            id="marker">
+
+            <img
+                id="markerImage"
+                alt="Vật giữa">
+
+        </div>
+
+
+        <!-- =====================================
+             ĐỘI XANH 1
+        ====================================== -->
+
+        <div
+            class="person blue blue1"
+            id="blue1">
+
+            <img
+                id="blue1Image"
+                alt="Người xanh 1">
+
+        </div>
+
+
+        <!-- =====================================
+             ĐỘI XANH 2
+        ====================================== -->
+
+        <div
+            class="person blue blue2"
+            id="blue2">
+
+            <img
+                id="blue2Image"
+                alt="Người xanh 2">
+
+        </div>
+
+
+        <!-- =====================================
+             ĐỘI ĐỎ 1
+        ====================================== -->
+
+        <div
+            class="person red red1"
+            id="red1">
+
+            <img
+                id="red1Image"
+                alt="Người đỏ 1">
+
+        </div>
+
+
+        <!-- =====================================
+             ĐỘI ĐỎ 2
+        ====================================== -->
+
+        <div
+            class="person red red2"
+            id="red2">
+
+            <img
+                id="red2Image"
+                alt="Người đỏ 2">
+
+        </div>
+
+
+        <!-- =====================================
+             HƯỚNG DẪN
+        ====================================== -->
+
+        <div class="hint">
+            Tap space repeatedly to pull the rope.
+        </div>
+
+
+        <!-- =================================================
+             MÀN HÌNH KẾT QUẢ
+        ================================================= -->
+
+        <div
+            class="game-result-screen"
+            id="gameResultScreen">
+
+
+            <div
+                class="result-image-wrapper"
+                id="resultImageWrapper">
+
+
+                <!-- PNG YOU WIN / YOU LOSE -->
+
+                <img
+                    class="result-image"
+                    id="resultImage"
+                    alt="Kết quả">
+
+
+                <!-- =====================================
+                     VÙNG CLICK RETURN
+                ====================================== -->
+
+                <button
+                    type="button"
+                    class="return-hitbox"
+                    id="returnButton"
+                    aria-label="Return">
+                </button>
+
+
+                <!-- =====================================
+                     VÙNG CLICK PLAY AGAIN
+                ====================================== -->
+
+                <button
+                    type="button"
+                    class="play-again-hitbox"
+                    id="playAgainButton"
+                    aria-label="Play Again">
+                </button>
+
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+
+/* =====================================================
+   
+   TÊN FILE ẢNH
+
+===================================================== */
+
+const IMAGE = {
+
+    canh:
+        "land game 1 4 5.png",
+
+    nguoiXanh1:
+        "nvc nam.png",
+
+    nguoiXanh2:
+        "nvp game 1.png",
+
+    nguoiDo1:
+        "nvp.png",
+
+    nguoiDo2:
+        "nvp.png",
+
+    day:
+        "day.png",
+
+    vatGiua:
+        "game 1 rope knot.png",
+
+    youWin:
+        "you_win_screen.png",
+
+    youLose:
+        "you_lose_screen.png"
+
+};
+
+
+
+/* =====================================================
+   
+   LOAD ẢNH
+
+===================================================== */
+
+function loadImage(
+    fileName,
+    callback
+) {
+
+    if (!fileName) {
+
+        callback(null);
+
+        return;
+    }
+
+
+    const path1 =
+        "images/" + fileName;
+
+
+    const test1 =
+        new Image();
+
+
+    test1.onload =
+        function() {
+
+            callback(path1);
+
+        };
+
+
+    test1.onerror =
+        function() {
+
+            const path2 =
+                fileName;
+
+
+            const test2 =
+                new Image();
+
+
+            test2.onload =
+                function() {
+
+                    callback(path2);
+
+                };
+
+
+            test2.onerror =
+                function() {
+
+                    console.error(
+                        "Không tìm thấy ảnh:",
+                        fileName
+                    );
+
+                    callback(null);
+
+                };
+
+
+            test2.src =
+                path2;
+
+        };
+
+
+    test1.src =
+        path1;
+
+}
+
+
+
+/* =====================================================
+   
+   LOAD CẢNH
+
+===================================================== */
+
+loadImage(
+
+    IMAGE.canh,
+
+    function(path) {
+
+        if (path) {
+
+            document
+                .getElementById(
+                    "background"
+                )
+                .style.backgroundImage =
+                `url("${path}")`;
+
+        }
+
+    }
+
+);
+
+
+
+/* =====================================================
+   
+   LOAD DÂY
+
+===================================================== */
+
+loadImage(
+
+    IMAGE.day,
+
+    function(path) {
+
+        const rope =
+            document.getElementById(
+                "rope"
+            );
+
+
+        if (path) {
+
+            rope.style.backgroundImage =
+                `url("${path}")`;
+
+        }
+
+        else {
+
+            rope.classList.add(
+                "default-rope"
+            );
+
+        }
+
+    }
+
+);
+
+
+
+/* =====================================================
+   
+   LOAD VẬT GIỮA
+
+===================================================== */
+
+loadImage(
+
+    IMAGE.vatGiua,
+
+    function(path) {
+
+        const marker =
+            document.getElementById(
+                "marker"
+            );
+
+
+        const image =
+            document.getElementById(
+                "markerImage"
+            );
+
+
+        if (path) {
+
+            image.src =
+                path;
+
+        }
+
+        else {
+
+            marker.style.display =
+                "none";
+
+        }
+
+    }
+
+);
+
+
+
+/* =====================================================
+   
+   LOAD NHÂN VẬT
+
+===================================================== */
+
+function loadPerson(
+
+    imageId,
+
+    fileName
+
+) {
+
+    loadImage(
+
+        fileName,
+
+        function(path) {
+
+            const image =
+                document.getElementById(
+                    imageId
+                );
+
+
+            if (path) {
+
+                image.src =
+                    path;
+
+            }
+
+            else {
+
+                image.style.display =
+                    "none";
+
+            }
+
+        }
+
+    );
+
+}
+
+
+
+loadPerson(
+    "blue1Image",
+    IMAGE.nguoiXanh1
+);
+
+
+loadPerson(
+    "blue2Image",
+    IMAGE.nguoiXanh2
+);
+
+
+loadPerson(
+    "red1Image",
+    IMAGE.nguoiDo1
+);
+
+
+loadPerson(
+    "red2Image",
+    IMAGE.nguoiDo2
+);
+
+
+
+/* =====================================================
+   
+   LOAD YOU WIN / YOU LOSE
+
+===================================================== */
+
+let youWinPath = null;
+
+let youLosePath = null;
+
+
+
+loadImage(
+
+    IMAGE.youWin,
+
+    function(path) {
+
+        youWinPath = path;
+
+    }
+
+);
+
+
+
+loadImage(
+
+    IMAGE.youLose,
+
+    function(path) {
+
+        youLosePath = path;
+
+    }
+
+);
+
+
+
+/* =====================================================
+   
+   GAME
+
+===================================================== */
+
+let position = 50;
+
+let running = false;
+let countdownActive = false;
+let countdownTimerId = null;
+let gameTimeLeft = 30;
+const GAME_TIME_LIMIT = 30;
+let gameAnimationId = null;
+let lastGameTime = performance.now();
+
+
+
+/* =====================================================
+   
+   SỨC KÉO
+
+===================================================== */
+
+const playerPower =
+    4.5;
+
+
+const enemyPower =
+    4.5;
+
+
+const enemyInterval =
+    500;
+
+
+let lastEnemyPull =
+    performance.now();
+
+
+
+/* =====================================================
+   
+   HIỆU ỨNG ĐỘI XANH
+
+===================================================== */
+
+function playerPullAnimation() {
+
+    const blue1 =
+        document.getElementById(
+            "blue1"
+        );
+
+
+    const blue2 =
+        document.getElementById(
+            "blue2"
+        );
+
+
+    blue1.classList.remove(
+        "pull",
+        "pulling"
+    );
+
+
+    blue2.classList.remove(
+        "pull",
+        "pulling"
+    );
+
+
+    void blue1.offsetWidth;
+
+    void blue2.offsetWidth;
+
+
+    blue1.classList.add(
+        "pull",
+        "pulling"
+    );
+
+
+    blue2.classList.add(
+        "pull",
+        "pulling"
+    );
+
+
+    setTimeout(
+
+        function() {
+
+            blue1.classList.remove(
+                "pull",
+                "pulling"
+            );
+
+
+            blue2.classList.remove(
+                "pull",
+                "pulling"
+            );
+
+        },
+
+        150
+
+    );
+
+}
+
+
+
+/* =====================================================
+   
+   HIỆU ỨNG ĐỘI ĐỎ
+
+===================================================== */
+
+function enemyPullAnimation() {
+
+    const red1 =
+        document.getElementById(
+            "red1"
+        );
+
+
+    const red2 =
+        document.getElementById(
+            "red2"
+        );
+
+
+    red1.classList.remove(
+        "pull",
+        "pulling"
+    );
+
+
+    red2.classList.remove(
+        "pull",
+        "pulling"
+    );
+
+
+    void red1.offsetWidth;
+
+    void red2.offsetWidth;
+
+
+    red1.classList.add(
+        "pull",
+        "pulling"
+    );
+
+
+    red2.classList.add(
+        "pull",
+        "pulling"
+    );
+
+
+    setTimeout(
+
+        function() {
+
+            red1.classList.remove(
+                "pull",
+                "pulling"
+            );
+
+
+            red2.classList.remove(
+                "pull",
+                "pulling"
+            );
+
+        },
+
+        150
+
+    );
+
+}
+
+
+
+/* =====================================================
+   
+   NHẤN SPACE
+
+===================================================== */
+
+document.addEventListener(
+
+    "keydown",
+
+    function(event) {
+
+        if (
+
+            event.code !== "Space"
+
+            ||
+
+            !running
+
+        ) {
+
+            return;
+
+        }
+
+
+        if (event.repeat) {
+
+            return;
+
+        }
+
+
+        event.preventDefault();
+
+
+        position -=
+            playerPower;
+
+
+        if (position < 0) {
+
+            position = 0;
+
+        }
+
+
+        playerPullAnimation();
+
+
+        updateMarkerPosition();
+
+
+        if (position <= 0) {
+
+            position = 0;
+
+            updateMarkerPosition();
+
+            winGame("blue");
+
+        }
+
+    }
+
+);
+
+
+
+/* =====================================================
+   
+   CẬP NHẬT VỊ TRÍ VẬT GIỮA
+
+===================================================== */
+
+function updateMarkerPosition() {
+
+    const ropeLeft =
+        8;
+
+
+    const ropeWidth =
+        84;
+
+
+    const markerPosition =
+        ropeLeft +
+        (position / 100) *
+        ropeWidth;
+
+
+    document
+        .getElementById(
+            "marker"
+        )
+        .style.left =
+        markerPosition + "%";
+
+}
+
+
+
+/* =====================================================
+   
+   GAME LOOP
+
+===================================================== */
+
+function gameLoop() {
+
+    if (!running) {
+        return;
+    }
+
+    const currentTime = performance.now();
+
+    // Đếm ngược thời gian chơi theo thời gian thực.
+    // Không phụ thuộc vào enemyInterval hay tốc độ animation.
+    const deltaTime = (currentTime - lastGameTime) / 1000;
+    lastGameTime = currentTime;
+    gameTimeLeft -= deltaTime;
+
+    if (gameTimeLeft <= 0) {
+        gameTimeLeft = 0;
+        updateTimerDisplay();
+        winGame("red");
+        return;
+    }
+
+    updateTimerDisplay();
+
+    if (currentTime - lastEnemyPull >= enemyInterval) {
+        position += enemyPower;
+        lastEnemyPull = currentTime;
+        enemyPullAnimation();
+    }
+
+    if (position < 0) {
+        position = 0;
+    }
+
+    if (position > 100) {
+        position = 100;
+    }
+
+    updateMarkerPosition();
+
+    const blue1 = document.getElementById("blue1");
+    const blue2 = document.getElementById("blue2");
+
+    if (position < 47) {
+        blue1.classList.add("pull");
+        blue2.classList.add("pull");
+    }
+
+    const red1 = document.getElementById("red1");
+    const red2 = document.getElementById("red2");
+
+    if (position > 53) {
+        red1.classList.add("pull");
+        red2.classList.add("pull");
+    }
+
+    if (position <= 0) {
+        position = 0;
+        updateMarkerPosition();
+        winGame("blue");
+        return;
+    }
+
+    if (position >= 100) {
+        position = 100;
+        updateMarkerPosition();
+        winGame("red");
+        return;
+    }
+
+    gameAnimationId = requestAnimationFrame(gameLoop);
+}
+
+/* =====================================================
+   
+   HIỂN THỊ YOU WIN / YOU LOSE
+
+===================================================== */
+
+function updateTimerDisplay() {
+    const timer = document.getElementById("gameTimer");
+    document.getElementById("timerText").textContent = Math.ceil(gameTimeLeft) + "s";
+    timer.classList.toggle("warning", gameTimeLeft <= 10);
+}
+
+function startCountdown() {
+    if (countdownActive) return;
+    countdownActive = true;
+    running = false;
+    const countdown = document.getElementById("countdown");
+    countdown.style.display = "flex";
+    let count = 3;
+    countdown.textContent = count;
+    if (countdownTimerId !== null) clearInterval(countdownTimerId);
+    countdownTimerId = setInterval(function() {
+        count--;
+        if (count > 0) {
+            countdown.textContent = count;
+        } else {
+            clearInterval(countdownTimerId);
+            countdownTimerId = null;
+            countdown.textContent = "GO!";
+            setTimeout(function() {
+                countdown.style.display = "none";
+                countdownActive = false;
+                running = true;
+                lastGameTime = performance.now();
+                lastEnemyPull = performance.now();
+                gameAnimationId = requestAnimationFrame(gameLoop);
+            }, 450);
+        }
+    },1000);
+}
+
+function startNewGame() {
+    if (gameAnimationId !== null) cancelAnimationFrame(gameAnimationId);
+    if (countdownTimerId !== null) clearInterval(countdownTimerId);
+    gameAnimationId = null; countdownTimerId = null;
+    position = 50; running = false; countdownActive = false;
+    gameTimeLeft = GAME_TIME_LIMIT;
+    updateTimerDisplay(); updateMarkerPosition();
+    document.getElementById("gameResultScreen").classList.remove("show");
+    document.getElementById("startMenu").style.display = "none";
+    document.getElementById("gameTimer").style.display = "block";
+    document.getElementById("blue1").classList.remove("pull","pulling");
+    document.getElementById("blue2").classList.remove("pull","pulling");
+    document.getElementById("red1").classList.remove("pull","pulling");
+    document.getElementById("red2").classList.remove("pull","pulling");
+    startCountdown();
+}
+
+function winGame(team) {
+
+    if (!running) {
+
+        return;
+
+    }
+
+
+    running = false;
+    document.getElementById("gameTimer").style.display = "none";
+    if (gameAnimationId !== null) { cancelAnimationFrame(gameAnimationId); gameAnimationId = null; }
+
+    const resultScreen =
+        document.getElementById(
+            "gameResultScreen"
+        );
+
+
+    const resultImage =
+        document.getElementById(
+            "resultImage"
+        );
+
+
+    /*
+       XANH THẮNG
+       → YOU WIN
+    */
+
+    if (team === "blue") {
+
+        resultImage.src =
+            youWinPath ||
+            IMAGE.youWin;
+
+    }
+
+
+    /*
+       ĐỎ THẮNG
+       → YOU LOSE
+    */
+
+    else {
+
+        resultImage.src =
+            youLosePath ||
+            IMAGE.youLose;
+
+    }
+
+
+    /*
+       HIỆN PNG
+    */
+
+    resultScreen.classList.add(
+        "show"
+    );
+
+}
+
+
+
+/* =====================================================
+   MENU ĐẦU GAME
+===================================================== */
+document.getElementById("menuPlay").addEventListener("click", function(e){ e.preventDefault(); e.stopPropagation(); startNewGame(); });
+document.getElementById("menuReturn").addEventListener("click", function(e){ if(this.getAttribute("href")==="maychu.html") e.preventDefault(); });
+
+
+/* =====================================================
+   
+   PLAY AGAIN
+
+===================================================== */
+
+function restartGame() {
+    startNewGame();
+}
+
+
+
+/* =====================================================
+   
+   RETURN
+
+   → QUAY LẠI TRANG TRƯỚC
+===================================================== */
+
+function returnToMenu() {
+
+    /*
+       Quay lại đúng trang trước đó
+    */
+
+    if (window.history.length > 1) {
+
+        window.history.back();
+
+    }
+
+    else {
+
+        window.location.href =
+            "maychu.html";
+
+    }
+
+}
+
+
+
+/* =====================================================
+   
+   NÚT PLAY AGAIN
+
+   VÙNG TRONG SUỐT
+===================================================== */
+
+document
+    .getElementById(
+        "playAgainButton"
+    )
+    .addEventListener(
+
+        "click",
+
+        function(event) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            restartGame();
+
+        }
+
+    );
+
+
+
+/* =====================================================
+   
+   NÚT RETURN
+
+   VÙNG TRONG SUỐT
+===================================================== */
+
+document
+    .getElementById(
+        "returnButton"
+    )
+    .addEventListener(
+
+        "click",
+
+        function(event) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            returnToMenu();
+
+        }
+
+    );
+
+
+
+/* =====================================================
+   KHỞI ĐỘNG
+   Hiện menu, chưa chạy game.
+===================================================== */
+updateMarkerPosition();
+updateTimerDisplay();
+document.getElementById("startMenu").style.display = "flex";
+document.getElementById("countdown").style.display = "none";
+document.getElementById("gameTimer").style.display = "none";
+
+
+</script>
+
+
+</body>
+
+</html>

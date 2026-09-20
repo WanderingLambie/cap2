@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Behind each game...</title>
+  <meta name="description" content="Behind each game, there’s a deeper meaning about hope and wishes: Tug of War, Boat Race, Bamboo Dance, Throwing “con” and Ball Snatching.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Glory:ital,wght@1,400&family=Pixelify+Sans:wght@400&display=swap" rel="stylesheet">
+  <style>
+    /* KiwiSoda is not available on Google Fonts: place the font file at fonts/KiwiSoda.woff2 (or install it locally). */
+    @font-face {
+      font-family: "KiwiSoda";
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+      src: local("KiwiSoda"), local("KiwiSoda-Medium"), local("Kiwi Soda"),
+           url("fonts/KiwiSoda.woff2") format("woff2");
+    }
+
+    /* ==========================================================
+       Design tokens
+       ========================================================== */
+    :root {
+      /* colors */
+      --color-bg: #fff4e0;
+      --color-text: #577658;
+      --color-heading: #b4d0b5;
+      --color-heading-shadow: #113d22;
+
+      /* font families */
+      --font-display: "KiwiSoda", "Pixel-love", sans-serif;
+      --font-body: "pixel-love", monospace;
+      --font-verse: "pixel-love", sans-serif;
+
+      /* font sizes */
+      --fs-heading: 40px;
+      --fs-body: 24px;
+      --fs-caption: 20px;
+
+      /* line heights */
+      --lh-heading: 1.1;   /* 44px  */
+      --lh-body: 1.2;      /* 28.8px */
+      --lh-verse: 1.1;     /* 26.4px */
+      --lh-caption: 1.2;   /* 24px  */
+
+      /* effects */
+      --shadow-heading: 3px 5px 0 var(--color-heading-shadow);
+
+      /* spacing */
+      --space-page-left: 84px;
+      --space-page-right: 194.073px;
+      --space-page-bottom: 168px;
+      --space-header-height: 100px;
+      --space-back-left: 42px;
+      --space-back-top: 14px;
+      --space-section-indent: 40px;
+      --space-verse-column: 408px;
+      --space-paragraph: 1.2em;
+      --space-verse-paragraph: 1.1em;
+
+      /* motion */
+      --duration-menu: 0.35s;
+    }
+
+    /* ==========================================================
+       Base
+       ========================================================== */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+    body {
+      margin: 0;
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-body);
+      font-size: var(--fs-body);
+      font-weight: 400;
+      line-height: var(--lh-body);
+    }
+
+    h1, h2, p, figure, blockquote, ul { margin: 0; padding: 0; }
+    ul { list-style: none; }
+    img { display: block; max-width: 100%; }
+
+    /* ==========================================================
+       Page (background art + canvas)
+       ========================================================== */
+    .page {
+      position: relative;
+      overflow: hidden;
+      background-color: var(--color-bg);
+    }
+
+    .page__canvas {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    .page__art {
+      position: absolute;
+      max-width: none;
+      object-fit: cover;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* Anchored to the horizontal centre and to the bottom edge so the art
+       matches the 1440 x 7226 frame at desktop and stays in place when
+       the content height changes. */
+    .page__art--mountains {
+      z-index: 0;
+      left: calc(50% - 2064px);
+      bottom: -398px;
+      width: 4096px;
+      height: 4096px;
+      opacity: 0.35;
+    }
+
+    .page__art--fog-1 {
+      z-index: 0;
+      left: calc(50% - 895px);
+      bottom: -30px;
+      width: 2424px;
+      height: 969px;
+      opacity: 0.55;
+    }
+
+    .page__art--fog-2 {
+      z-index: 2;
+      left: calc(50% - 1878px);
+      bottom: -116px;
+      width: 2315px;
+      height: 926px;
+      opacity: 0.55;
+    }
+
+    .page__art--fog-3 {
+      z-index: 2;
+      left: calc(50% - 782px);
+      bottom: -316px;
+      width: 1925px;
+      height: 770px;
+    }
+
+    /* ==========================================================
+       Header
+       ========================================================== */
+    .header {
+      position: relative;
+      height: var(--space-header-height);
+    }
+
+    .header__back {
+      position: absolute;
+      top: var(--space-back-top);
+      left: var(--space-back-left);
+      display: block;
+      width: 84.314px;
+      height: 46.93px;
+    }
+
+    .header__back-art {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .header__back-sprite {
+      position: absolute;
+      top: -90.11%;
+      left: -213.84%;
+      width: 644.03%;
+      height: 462.71%;
+      max-width: none;
+    }
+
+    .header__back-icon {
+      position: absolute;
+      top: 5.915px;
+      left: 29.578px;
+      width: 35.493px;
+      height: 35.493px;
+      max-width: none;
+      object-fit: contain;
+      pointer-events: none;
+    }
+
+    .header__toggle,
+    .header__nav { display: none; }
+
+    .header__toggle {
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      width: 44px;
+      height: 44px;
+      padding: 9px;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .header__toggle-bar {
+      display: block;
+      width: 100%;
+      height: 3px;
+      background-color: var(--color-heading-shadow);
+      transition: transform var(--duration-menu) ease, opacity var(--duration-menu) ease;
+    }
+
+    .header__toggle[aria-expanded="true"] .header__toggle-bar--top { transform: translateY(9px) rotate(45deg); }
+    .header__toggle[aria-expanded="true"] .header__toggle-bar--middle { opacity: 0; }
+    .header__toggle[aria-expanded="true"] .header__toggle-bar--bottom { transform: translateY(-9px) rotate(-45deg); }
+
+    .header__link {
+      display: block;
+      padding: 12px 0;
+      border-top: 2px solid var(--color-heading);
+      color: var(--color-text);
+      font-family: var(--font-body);
+      font-size: var(--fs-caption);
+      line-height: var(--lh-body);
+      text-decoration: none;
+    }
+
+    .header__link:hover { color: var(--color-heading-shadow); }
+
+    .header__back:focus-visible,
+    .header__toggle:focus-visible,
+    .header__link:focus-visible {
+      outline: 3px solid var(--color-heading-shadow);
+      outline-offset: 2px;
+    }
+
+    /* ==========================================================
+       Main / intro
+       ========================================================== */
+    .main {
+      padding: 0 var(--space-page-right) var(--space-page-bottom) var(--space-page-left);
+    }
+
+    .title,
+    .story__heading {
+      color: var(--color-heading);
+      font-family: var(--font-display);
+      font-size: var(--fs-heading);
+      font-weight: 500;
+      line-height: var(--lh-heading);
+      text-shadow: var(--shadow-heading);
+      overflow-wrap: break-word;
+    }
+
+    .lead {
+      margin-top: 12px;
+      color: var(--color-text);
+      font-family: var(--font-body);
+      font-size: var(--fs-body);
+      font-weight: 400;
+      line-height: var(--lh-body);
+    }
+
+    /* ==========================================================
+       Story sections
+       ========================================================== */
+    .story--tug    { margin-top: 82.4px; }
+    .story--boat   { margin-top: 56px; }
+    .story--bamboo { margin-top: 57px; }
+    .story--con    { margin-top: 100px; }
+    .story--ball   { margin-top: 229px; margin-left: var(--space-section-indent); margin-right: calc(var(--space-section-indent) * -1); }
+
+    .story__text {
+      margin-top: 12px;
+      color: var(--color-text);
+      font-family: var(--font-body);
+      font-size: var(--fs-body);
+      font-weight: 400;
+      line-height: var(--lh-body);
+      overflow-wrap: break-word;
+    }
+
+    .story__paragraph + .story__paragraph { margin-top: var(--space-paragraph); }
+
+    /* vertical rhythm measured from the Figma frame */
+    .story--tug .story__text--a  { margin-top: 12px; }
+    .story--tug .verse           { margin-top: 23.2px; }
+    .story--tug .story__text--b  { margin-top: 41.6px; }
+    .story--tug .figure          { margin-top: 35.2px; }
+
+    .story--boat .story__text    { margin-top: 21px; }
+    .story--boat .figure         { margin-top: 52.4px; }
+
+    .story--bamboo .story__text  { margin-top: 12px; }
+    .story--bamboo .figure       { margin-top: 43.6px; }
+
+    .story--con .story__text     { margin-top: 27px; }
+    .story--con .figure          { margin-top: 48px; }
+
+    .story--ball .story__text--a { margin-top: 102px; }
+    .story--ball .verse--a       { margin-top: 22.8px; }
+    .story--ball .story__text--b { margin-top: 25.4px; }
+    .story--ball .verse--b       { margin-top: 31.4px; }
+    .story--ball .story__text--c { margin-top: 42.8px; }
+    .story--ball .figure         { margin-top: 49.4px; }
+
+    /* ==========================================================
+       Verse (chants)
+       ========================================================== */
+    .verse {
+      color: var(--color-text);
+      font-family: var(--font-verse);
+      font-size: var(--fs-body);
+      font-style: italic;
+      font-weight: 400;
+      line-height: var(--lh-verse);
+      overflow-wrap: break-word;
+    }
+
+    .verse--split {
+      display: grid;
+      grid-template-columns: var(--space-verse-column) minmax(0, 1fr);
+    }
+
+    .verse__line--spaced { margin-top: var(--space-verse-paragraph); }
+
+    /* ==========================================================
+       Figures
+       ========================================================== */
+    .figure { max-width: 100%; }
+
+    .figure__media {
+      width: 100%;
+      height: auto;
+      aspect-ratio: var(--figure-ratio);
+      object-fit: cover;
+    }
+
+    .figure__caption {
+      color: var(--color-text);
+      font-family: var(--font-body);
+      font-size: var(--fs-caption);
+      font-weight: 400;
+      line-height: var(--lh-caption);
+      white-space: nowrap;
+    }
+
+    .figure--tug    { --figure-ratio: 352 / 264; width: 352px; margin-left: 314px; }
+    .figure--boat   { --figure-ratio: 353 / 192; width: 353px; margin-left: 314px; }
+    .figure--bamboo { --figure-ratio: 420 / 237; width: 420px; margin-left: 315px; }
+    .figure--con    { --figure-ratio: 451 / 301; width: 451px; margin-left: 299px; }
+    .figure--ball   { --figure-ratio: 423 / 282; width: 423px; margin-left: 259px; }
+
+    .figure--tug .figure__caption    { margin-top: 9px; }
+    .figure--boat .figure__caption   { margin-top: 10px; }
+    .figure--bamboo .figure__caption { margin-top: 9px; }
+    .figure--con .figure__caption    { width: 431px; margin-top: 8px; text-align: center; }
+    .figure--ball .figure__caption   { width: 424.14px; margin-top: 15px; text-align: center; }
+
+    /* ==========================================================
+       Tablet (max-width: 1024px)
+       ========================================================== */
+    @media (max-width: 1024px) {
+      :root {
+        --space-page-left: 40px;
+        --space-page-right: 40px;
+        --space-page-bottom: 96px;
+        --fs-heading: 32px;
+        --fs-body: 20px;
+        --fs-caption: 18px;
+      }
+
+      .header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        height: auto;
+        padding: var(--space-back-top) var(--space-page-left);
+      }
+
+      .header__back {
+        position: relative;
+        top: auto;
+        left: auto;
+        flex: none;
+      }
+
+      .header__toggle { display: flex; }
+
+      .header__nav {
+        display: block;
+        flex-basis: 100%;
+        max-height: 0;
+        overflow: hidden;
+        visibility: hidden;
+        transition: max-height var(--duration-menu) ease, visibility 0s linear var(--duration-menu);
+      }
+
+      .header--open .header__nav {
+        max-height: 24rem;
+        visibility: visible;
+        transition: max-height var(--duration-menu) ease, visibility 0s linear 0s;
+      }
+
+      .header__list { padding: 8px 0 16px; }
+
+      .title { margin-top: 24px; }
+
+      .story { margin-top: 56px; }
+      .story--ball { margin-left: 0; margin-right: 0; }
+
+      .story .story__text,
+      .story .verse,
+      .story .figure { margin-top: 20px; }
+
+      .story .figure { margin-left: 0; }
+
+      .story .figure__caption {
+        width: auto;
+        margin-top: 8px;
+        white-space: normal;
+      }
+    }
+
+    /* ==========================================================
+       Mobile (max-width: 768px)
+       ========================================================== */
+    @media (max-width: 768px) {
+      :root {
+        --space-page-left: 20px;
+        --space-page-right: 20px;
+        --space-page-bottom: 72px;
+        --fs-heading: 26px;
+        --fs-body: 16px;
+        --fs-caption: 14px;
+      }
+
+      .story { margin-top: 44px; }
+
+      .verse--split {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: var(--space-verse-paragraph);
+      }
+    }
+
+    /* ==========================================================
+       Reduced motion
+       ========================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      .header__nav,
+      .header__toggle-bar { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <img class="page__art page__art--mountains" src="https://www.figma.com/api/mcp/asset/c290cc5f-98e1-49ad-8912-574ab984aba6.png" alt="" aria-hidden="true">
+    <img class="page__art page__art--fog-1" src="https://www.figma.com/api/mcp/asset/6fe38bb1-6004-4341-acce-a9a8c731189d.png" alt="" aria-hidden="true">
+
+    <div class="page__canvas">
+      <header class="header" id="top">
+        <a class="header__back" href="maychu.html" aria-label="Go back">
+          <span class="header__back-art">
+            <img class="header__back-sprite" src="https://www.figma.com/api/mcp/asset/c7fae7b5-c787-4004-b7ab-468ade20fff2.png" alt="" aria-hidden="true">
+          </span>
+          <img class="header__back-icon" src="https://www.figma.com/api/mcp/asset/db273c31-bdfd-4e44-9a39-dfd2ec24834f.png" alt="Left arrow">
+        </a>
+
+        <button class="header__toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open navigation menu">
+          <span class="header__toggle-bar header__toggle-bar--top"></span>
+          <span class="header__toggle-bar header__toggle-bar--middle"></span>
+          <span class="header__toggle-bar header__toggle-bar--bottom"></span>
+        </button>
+
+        <nav class="header__nav" id="site-nav" aria-label="Game sections">
+          <ul class="header__list">
+            <li><a class="header__link" href="#tug-of-war">Kéo co - Tug of War</a></li>
+            <li><a class="header__link" href="#boat-race">Đua Thuyên - Boat Race</a></li>
+            <li><a class="header__link" href="#bamboo-dance">Nhay Sap - Bamboo Dance</a></li>
+            <li><a class="header__link" href="#throwing-con">Ném Còn - Throwing “con”</a></li>
+            <li><a class="header__link" href="#ball-snatching">Cuop Câu - Ball Snatching</a></li>
+          </ul>
+        </nav>
+      </header>
+
+      <main class="main">
+        <h1 class="title">Behind each game...</h1>
+        <p class="lead">Behind each game, there’s a deeper meaning about hope and wishes. We’ll be finding out more in this section. feel free to return if you’re not interested.</p>
+
+        <!-- Tug of War -->
+        <section class="story story--tug" aria-labelledby="tug-of-war">
+          <h2 class="story__heading" id="tug-of-war">Kéo co - Tug of War</h2>
+
+          <div class="story__text story__text--a">
+            <p class="story__paragraph">The game takes place on a steep hillside before new year. With no age, gender nor amount of players limited, players will stand in two sides: upper and lower parts. rope is a thick, long rattan cane.</p>
+            <p class="story__paragraph">Before the game starts, players grip the rattan rope tightly and sit down. This is when the shaman comes between the teams and say the prayer:</p>
+          </div>
+
+          <blockquote class="verse verse--split">
+            <div class="verse__col">
+              <p class="verse__line">Giai làng ta nhé! dạ... </p>
+              <p class="verse__line">Đại nam quốc nhé! ... da... </p>
+              <p class="verse__line">Lào Cai tính nhé! .... da... </p>
+              <p class="verse__line">Văn bàn huyện nhé!.. </p>
+              <p class="verse__line">Khánh Yên xã nhé!</p>
+              <p class="verse__line">Làng Lắng thôn nhé! </p>
+              <p class="verse__line">Bước sang năm mới nhé </p>
+              <p class="verse__line">Ta cầu thần cầu thánh đã xong nhé </p>
+              <p class="verse__line">Kéo xong bải xả nhé </p>
+              <p class="verse__line">Kéo lấy lúa lấy má nhé</p>
+              <p class="verse__line">Kéo lấy tắm lấy tơ nhé </p>
+            </div>
+            <div class="verse__col">
+              <p class="verse__line">Kéo lấy khoẻ lây già nhé </p>
+              <p class="verse__line">Kéo cho thịnh nam nhé Kéo cho thịnh nữ nhé </p>
+              <p class="verse__line">Kéo lấy khoẻ lấy già nhé </p>
+              <p class="verse__line">Già cho được khoẻ, trẻ cho được già nhé </p>
+              <p class="verse__line">Thứ nhất là kéo về trên nhé </p>
+              <p class="verse__line">Thứ hai là kéo về dưới nhé </p>
+              <p class="verse__line">Thứ ba kéo cho bình yên mạnh khoẻ nhé </p>
+              <p class="verse__line">Dạ, dạ, dạ..</p>
+            </div>
+          </blockquote>
+
+          <div class="story__text story__text--b">
+            <p class="story__paragraph">Every time the shaman finishes a sentence and pauses at the word nhé, all the players respond with the word da (meaning yes in a respectful way). Finally, when the prayer concludes, everyone responds with da da da three times in a row. Only after prayer finishes, the game starts.</p>
+            <p class="story__paragraph">The meaning behind the game in this case is to pray to the gods above for a bountiful harvest, for the olds and the young to be healthy, for the next year to be filled with luck.</p>
+          </div>
+
+          <figure class="figure figure--tug">
+            <img class="figure__media" src="https://www.figma.com/api/mcp/asset/3ed35c4e-63b0-4c30-91f3-5d00b372a461.png" alt="Players holding a long rattan rope during a traditional tug of war game" width="352" height="264">
+            <figcaption class="figure__caption">figure 1: Tug of war (báo thanh niên)</figcaption>
+          </figure>
+        </section>
+
+        <!-- Boat Race -->
+        <section class="story story--boat" aria-labelledby="boat-race">
+          <h2 class="story__heading" id="boat-race">Đua Thuyên - Boat Race</h2>
+
+          <div class="story__text">
+            <p class="story__paragraph">Boat racing was a ritual dedicated to the Water God, carrying fertility meaning to pray for successful farming and fishing. There are two parts of the event: the ritual and the festival. </p>
+            <p class="story__paragraph">After preparing the boats for the competition, the locals perform a worship ritual (this is the most important part of the event.) The ritual reflecting the coastal people's spiritual beliefs regarding their ancestors, as well as the river and sea gods.</p>
+            <p class="story__paragraph">In some places, the competition features only two boats. one is the 'male' boat with a bird figurehead, while the other is the 'female' boat featuring a fish. There’re two reciprocal symbols blending Yin and Yang, dry and wet. With this version of the ritual, the boats drifting and oars stirring the water aim to 'awaken the Water God.' Furthermore, this race is only held at night, concluding by dawn</p>
+          </div>
+
+          <figure class="figure figure--boat">
+            <img class="figure__media" src="https://www.figma.com/api/mcp/asset/89e47126-8eff-48d0-82aa-b69384245923.png" alt="Traditional boats racing on the water during a boat racing festival" width="353" height="192">
+            <figcaption class="figure__caption">figure 2: Boat Racing (báo thanh niên)</figcaption>
+          </figure>
+        </section>
+
+        <!-- Bamboo Dance -->
+        <section class="story story--bamboo" aria-labelledby="bamboo-dance">
+          <h2 class="story__heading" id="bamboo-dance">Nhay Sap - Bamboo Dance</h2>
+
+          <div class="story__text">
+            <p class="story__paragraph">We can’t talk about Bamboo dace without talking about the legend behind it. Panhou (bàn vuong/bàn hồ) was the one the brought peace to a kingdom in war. He was given a princess and land, becoming the founding ancestor of the Dao clan, bearing 12 children that became the twelve Dao clans.</p>
+            <p class="story__paragraph">It was believed that Panhou has the power to connect multiple worlds: human - nature; strength - simplicity. Bamboo tree became a material symbol of that transition.</p>
+            <p class="story__paragraph">Stepping through bamboo poles that continuously open and close, representing the concept of moving between different states and reenactment of the state of balance that Panhou has.</p>
+            <p class="story__paragraph">Bamboo dancing is a very important ritual executed exclusively at designated intervals within the ceremonial schedule. There are 3 ceremonials that used Bamboo dancing as a ritual:</p>
+            <p class="story__paragraph">The Panhou Worship Ritual: Held on the 16th day of the first lunar month. It is a community ritual (most important) which is a part of the community's joint celebration following the official ceremony</p>
+            <p class="story__paragraph">The Coming of age ceremony: Celebrating the youth's transition into adulthood. This accompany the village's communal feast following the solemn rituals.</p>
+            <p class="story__paragraph">New life festival: Held in September and October to celebrate the terraced fields turning a vibrant gold (bountiful harvest season.)</p>
+          </div>
+
+          <figure class="figure figure--bamboo">
+            <img class="figure__media" src="https://www.figma.com/api/mcp/asset/3c4cdcd0-741a-42e7-85c1-a4bc16b54a98.png" alt="Dancers stepping between bamboo poles in the traditional bamboo dance" width="420" height="237">
+            <figcaption class="figure__caption">figure 3: Bamboo dancing (Panhou retreat)</figcaption>
+          </figure>
+        </section>
+
+        <!-- Throwing con -->
+        <section class="story story--con" aria-labelledby="throwing-con">
+          <h2 class="story__heading" id="throwing-con">Ném Còn  - Throwing “con”</h2>
+
+          <div class="story__text">
+            <p class="story__paragraph">For the ancient Vietnamese, this game was traditionally associated with women, particularly those from noble families—once known as the daughters of the Mỵ Nương, Lạc Hầu, and Lạc Tướng. Among the Mường, Tày, H’Mông, Thai, and other ethnic groups, the còn-throwing game is one of the most captivating traditional rituals and activities for young men and women during spring festivals.</p>
+            <p class="story__paragraph">“Con” ball is made out of cotten, as big as a child’s hand and is sealed with colorful fabric. The ball is decorated with colorful fabric tassels, which also help guide its direction as it flies. </p>
+            <p class="story__paragraph">The field is a spacious open area with a tall bamboo or giant reed pole planted in the center. At the top is a circular “còn ring” (ring frame), with one side covered in red paper, symbolizing the sun, and the other side covered in yellow paper, symbolizing the moon. The paper-covered surface as a whole symbolizes a young woman’s purity. </p>
+            <p class="story__paragraph">Players stand facing each other on opposite sides of the pole and throw the còn ball through the ring at the top. The player who successfully gets the ball through the ring wins.</p>
+            <p class="story__paragraph">The game begins with a ritual ceremony. The shaman offers two còn balls to the spirits of heaven and earth, praying for peace and happiness in the village, abundant crops, and prosperity for every household. After the ceremony, the shaman throws the two consecrated còn balls into the air for everyone to scramble for, officially opening that year’s còn-throwing game. Only then are the other còn balls prepared by individual families thrown into the air, soaring like swallows.</p>
+            <p class="story__paragraph">Before the festival comes to an end, the shaman cuts open the sacred còn ball that has been consecrated and takes out the seeds inside, scattering them into the air for everyone to catch and receive good fortune. The Tày people believe that these seeds will bring abundant harvests and good luck because they have absorbed the warmth of the hands of both men and women, symbolizing the harmony of yin and yang. Beyond being a form of entertainment, còn throwing carries a fertility symbolism, expressing wishes for the harmonious union of yin and yang and for abundant, prosperous harvests.</p>
+          </div>
+
+          <figure class="figure figure--con">
+            <img class="figure__media" src="https://www.figma.com/api/mcp/asset/f81694a2-536e-47f9-a789-5500ab3f1483.png" alt="Players throwing a colorful “con” ball toward a ring on a tall pole" width="451" height="301">
+            <figcaption class="figure__caption">figure 4: Throwing “con” (Vietnam tourism)</figcaption>
+          </figure>
+        </section>
+
+        <!-- Ball Snatching -->
+        <section class="story story--ball" aria-labelledby="ball-snatching">
+          <h2 class="story__heading" id="ball-snatching">Cuop Câu - Ball Snatching</h2>
+
+          <div class="story__text story__text--a">
+            <p class="story__paragraph">For ball snatching, there are 4 different variants to the ritual.</p>
+            <p class="story__paragraph">1st is in Yen Man Village Festival, Bac Ninh City (held on the 14th day of the second lunar month). The two balls symbolize the two agricultural seasons, the chiêm (early crop) ball and the mùa (main crop) ball. The village youths split into two sides, competing to grab the ball and dodging and weaving past each other to drop it into their respective holes. Depending on which ball is captured, the people believe that either the early crop or the main crop will yield a bountiful harvest that year</p>
+            <p class="story__paragraph">2nd is the mud wrestling ball festival in Van Village, Van Ha Commune (Viet Yen District), held in the fourth lunar month. It is a mud-based ball wrestling is unique to Van Village. The round ball is a symbol of the sun, carried and tossed from East to West, following the path of the rising and setting sun. While the round ball represents Yang, the hole symbolizes Yin. The harmony between Yin and Yang signifies that everyone will prosper and enjoy peace in all aspects of life. After the ritual to honor the deities concludes, the players gather for a ceremonial feast. Following this, the drums and gongs strike three times, and the players line up to march around the field five times, shouting 'hi ha, hu he' to express their joy. During the game, a victory for the Southern side is considered an auspicious sign for the village, foretelling favorable weather and a bountiful harvest for that year.</p>
+            <p class="story__paragraph">The 3rd is in Dinh Noi Festival in Viet Lap Commune (Tan Yen District), a traditional custom called 'Moc Cau' (hook-ball). Dinh Noi holds the ball-grabbing festival / On the eleventh of the first lunar month, people from all over return" - Folk saying. the young men chosen from the village to participate in the festival are called the "quân cầu." the players stand solemnly in traditional attire for the ball-worship ritual. At a good hour, the ball is processed from the inner sanctum to the central chamber of the main communal house. Master of the ceremonial reads a ritual invocation to ask for permission to hold the festival.The field is arranged with two goal holes on the East and West sides, and a central hole in the middle. As both teams stand in a circle around the ball, the chief celebrant holds it and chants the invocation aloud</p>
+          </div>
+
+          <blockquote class="verse verse--a">
+            <p class="verse__line">Năm mới / Minh thánh đánh cầu / Quốc mạch hô giai / Giai hề, giai hề...<br>The players respond: Thánh cung vạn tuế / Thánh cung vạn vạn tuế.<br>The chief officiant then calls out: Một mùa được / Hai mùa được / Ba mùa được.<br>Chủ tế dứt lời cũng…”</p>
+          </blockquote>
+
+          <div class="story__text story__text--b">
+            <p class="story__paragraph">when the chanting finished, the ball is tossed into the air, and the referee waves a flag to signal the teams to start competing for the ball</p>
+            <p class="story__paragraph">The final version is in The Tien Luc Festival (Lang Giang District), held on the 18th, 19th, and 20th days of the third lunar month. festival master performs a ball-worship ritual at "Thảo xá." players wear reddish-brown shirts with matching headbands and sashes. festival master prepares to toss the ball, reciting an incantation beforehand. </p>
+          </div>
+
+          <blockquote class="verse verse--b">
+            <p class="verse__line">The person throwing the ball first recites:<br>“Năm nay tổ chức gieo cầu đầu năm để phụng thờ Thánh, cầu cho quốc thái dân an, cho thiên hạ thái bình, cho nhân khang vật thịnh, cho được mùa khoai, cho sai mùa đỗ, cho lúa đầy bồ, cho dân làng bình an thịnh vượng.”</p>
+            <p class="verse__line verse__line--spaced">After that, the first round of ceremonial chants is performed:<br>“Niên minh năm mới đánh cầu cho đinh tài thịnh vượng;<br>Đầu xuân năm mới đánh cầu cho gia súc khỏe mạnh bình an;<br>Đầu xuân năm mới đánh cầu cho nhân khang vật thịnh.”</p>
+          </blockquote>
+
+          <div class="story__text story__text--c">
+            <p class="story__paragraph">festival master tosses the ball into the air, and the players from both sides rush in to compete. When the ball reaches or crosses the opponent's line, a victory is declared. The winning side receives the village prize and, according to traditional belief, is blessed with a year full of good fortune. </p>
+            <p class="story__paragraph">the ball-throwing ceremony functions as a ritual prayer for peace, health, fertility, agricultural abundance, and prosperity in the coming year. </p>
+          </div>
+
+          <figure class="figure figure--ball">
+            <img class="figure__media" src="https://www.figma.com/api/mcp/asset/1a07dd61-791d-418f-bc29-ebbad74830ef.png" alt="Festival players competing to snatch a ball during the ball snatching game" width="423" height="282">
+            <figcaption class="figure__caption">figure 4: Ball Snatching (Vietnam tourism)</figcaption>
+          </figure>
+        </section>
+      </main>
+    </div>
+
+    <img class="page__art page__art--fog-2" src="https://www.figma.com/api/mcp/asset/74813b1b-7b88-47d8-8606-f85ca19d2433.png" alt="" aria-hidden="true">
+    <img class="page__art page__art--fog-3" src="https://www.figma.com/api/mcp/asset/c81b3dc0-b3dc-4856-82e5-d0d13811451f.png" alt="" aria-hidden="true">
+  </div>
+
+  <script>
+    (function () {
+      var header = document.querySelector('.header');
+      var toggle = document.querySelector('.header__toggle');
+      var nav = document.getElementById('site-nav');
+      var mobileQuery = window.matchMedia('(max-width: 1024px)');
+
+      function setOpen(isOpen) {
+        header.classList.toggle('header--open', isOpen);
+        toggle.setAttribute('aria-expanded', String(isOpen));
+        toggle.setAttribute('aria-label', isOpen ? 'Close navigation menu' : 'Open navigation menu');
+      }
+
+      toggle.addEventListener('click', function () {
+        setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+      });
+
+      nav.addEventListener('click', function (event) {
+        if (event.target.closest('a')) { setOpen(false); }
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+          setOpen(false);
+          toggle.focus();
+        }
+      });
+
+      mobileQuery.addEventListener('change', function (event) {
+        if (!event.matches) { setOpen(false); }
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,2791 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Nem Con</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #f8d7d7;
+    font-family: "Kiwisoda", "Pixel-love", Arial, sans-serif;
+}
+
+#game {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    min-height: 520px;
+    overflow: hidden;
+}
+
+
+/* =========================
+   ẢNH NỀN
+========================= */
+
+#backgroundImage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 1;
+    pointer-events: none;
+}
+
+
+/* =========================
+   LỚP TRANG TRÍ
+========================= */
+
+#game::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+}
+
+
+/* =========================
+   HUD
+========================= */
+
+#hud {
+    position: absolute;
+    top: 28px;
+    left: 138px;
+    z-index: 20;
+
+    font-size: clamp(22px, 3vw, 36px);
+    letter-spacing: -1px;
+    color: #111;
+    font-weight: 800;
+}
+
+#score {
+    font-size: 15px;
+    letter-spacing: 1px;
+    vertical-align: middle;
+}
+
+#status {
+    position: absolute;
+    top: 32px;
+    right: 42px;
+    z-index: 20;
+
+    font-size: 15px;
+    letter-spacing: 1px;
+    font-weight: bold;
+}
+
+
+/* =========================
+   CANVAS
+========================= */
+
+#canvas {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    z-index: 5;
+}
+
+
+/* =========================
+   STRENGTH
+========================= */
+
+#meterWrap {
+    position: absolute;
+
+    left: 40px;
+    top: 22px;
+    bottom: 74px;
+
+    width: 82px;
+
+    z-index: 15;
+}
+
+#meter {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+    bottom: 0;
+
+    width: 82px;
+
+    border-radius: 43px 43px 8px 8px;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(255,65,65,.95) 0%,
+            rgba(255,125,85,.95) 30%,
+            rgba(214,197,65,.95) 62%,
+            rgba(111,220,103,.95) 100%
+        );
+
+    box-shadow:
+        inset 0 0 0 1px rgba(0,0,0,.06);
+
+    overflow: hidden;
+}
+
+#meterLines {
+    position: absolute;
+    inset: 0;
+
+    pointer-events: none;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0 58px,
+            rgba(255,255,255,.95) 58px 61px
+        );
+}
+
+#strengthCursor {
+    position: absolute;
+
+    left: 27px;
+
+    width: 54px;
+    height: 6px;
+
+    border-radius: 5px;
+
+    background: white;
+
+    box-shadow:
+        0 0 4px rgba(0,0,0,.15);
+
+    transform: translateY(-50%);
+}
+
+#strengthText {
+    position: absolute;
+
+    left: 8px;
+    bottom: -30px;
+
+    width: 100px;
+
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .4px;
+}
+
+
+/* =========================
+   HELP
+========================= */
+
+#help {
+    position: absolute;
+
+    left: 50%;
+    bottom: 28px;
+
+    transform: translateX(-50%);
+
+    width: 470px;
+
+    text-align: center;
+
+    z-index: 20;
+
+    font-size: 14px;
+    line-height: 1.45;
+    font-weight: 700;
+}
+
+#help b {
+    font-size: 18px;
+}
+
+#aimHint {
+    position: absolute;
+
+    z-index: 8;
+
+    pointer-events: none;
+
+    color: rgba(0,0,0,.55);
+
+    font-size: 12px;
+    font-weight: bold;
+}
+
+
+/* =========================================================
+   RESULT SCREEN
+
+   PNG GỐC:
+   2048 x 819
+
+   KHÔNG ÉP PNG VÀO KHUNG 614x436.
+   Dùng nguyên tỷ lệ ảnh.
+========================================================= */
+
+#result {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 100;
+
+    display: none;
+
+    overflow: hidden;
+
+    background: rgba(0,0,0,.58);
+
+    pointer-events: auto;
+}
+
+
+/* =========================
+   ẢNH YOU WIN / YOU LOSE
+========================= */
+
+#resultScreenImage {
+    position: absolute;
+
+    /*
+       Giữ nguyên tỷ lệ PNG
+    */
+    width: 100%;
+    height: auto;
+
+    max-width: none;
+    max-height: none;
+
+    /*
+       Căn giữa theo chiều dọc
+    */
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    /*
+       Dịch ảnh sang trái một lượng
+       để KHUNG bên trong PNG
+       nằm chính giữa màn hình.
+    */
+    left: -13.77%;
+
+    display: block;
+
+    pointer-events: none;
+    user-select: none;
+}
+
+
+/* =========================
+   YOU WIN
+========================= */
+
+#result.win #resultScreenImage {
+    content: url("you_win_screen.png");
+}
+
+
+/* =========================
+   YOU LOSE
+========================= */
+
+#result.lose #resultScreenImage {
+    content: url("you_lose_screen.png");
+}
+
+
+/* =========================================================
+   PLAY AGAIN
+
+   BUTTON HOÀN TOÀN TRONG SUỐT.
+   KHÔNG CÓ CHỮ.
+   KHÔNG CÓ NỀN.
+   KHÔNG CÓ VIỀN.
+
+   Chữ PLAY AGAIN? nằm sẵn trên PNG.
+========================================================= */
+
+#restart {
+    position: absolute;
+
+    /*
+       Tọa độ vùng PLAY AGAIN
+       tính theo tỷ lệ màn hình PNG.
+    */
+
+    left: 50%;
+
+    top: 70%;
+
+    transform:
+        translate(-50%, -50%);
+
+    /*
+       Kích thước vùng click
+    */
+    width: 210px;
+    height: 70px;
+
+    margin: 0;
+    padding: 0;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    z-index: 110;
+
+    /*
+       Không hiện chữ HTML
+    */
+    font-size: 0;
+    color: transparent;
+
+    appearance: none;
+}
+
+
+/*
+   Hover cũng không được hiện nền.
+*/
+#restart:hover,
+#restart:active,
+#restart:focus {
+    background: transparent;
+    border: none;
+    outline: none;
+}
+
+
+/* =========================================================
+   RETURN
+
+   Vùng click trong suốt.
+   Chữ RETURN nằm sẵn trên PNG.
+
+   Không dùng button HTML nhìn thấy.
+========================================================= */
+
+#returnButton {
+    position: absolute;
+
+    left: 50%;
+
+    top: 86%;
+
+    transform:
+        translate(-50%, -50%);
+
+    width: 210px;
+    height: 60px;
+
+    margin: 0;
+    padding: 0;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    z-index: 110;
+
+    font-size: 0;
+    color: transparent;
+
+    appearance: none;
+}
+
+#returnButton:hover,
+#returnButton:active,
+#returnButton:focus {
+    background: transparent;
+    border: none;
+    outline: none;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 650px) {
+
+    #hud {
+        left: 130px;
+        font-size: 22px;
+    }
+
+    #meterWrap {
+        left: 18px;
+        width: 65px;
+    }
+
+    #meter {
+        width: 65px;
+    }
+
+    #strengthCursor {
+        left: 20px;
+        width: 45px;
+    }
+
+    #help {
+        width: 320px;
+        font-size: 12px;
+    }
+
+}
+
+
+/* =========================================================
+   MÀN HÌNH NHỎ
+
+   Thu nhỏ nguyên PNG theo đúng tỷ lệ,
+   KHÔNG làm méo ảnh.
+========================================================= */
+
+@media (max-width: 900px) {
+
+    #resultScreenImage {
+        width: 120%;
+        left: -23.77%;
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    #resultScreenImage {
+        width: 150%;
+        left: -38.77%;
+    }
+
+}
+
+
+/* Màn hình rất nhỏ */
+
+@media (max-width: 500px) {
+
+    #resultScreenImage {
+        width: 175%;
+        left: -51.27%;
+    }
+
+}
+
+
+/* =========================
+   MENU + COUNTDOWN
+   ========================= */
+#startMenu {
+    position: absolute;
+    inset: 0;
+    z-index: 150;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    background: rgba(0,0,0,.48);
+}
+#startMenu .menuButton {
+    width: 220px;
+    height: 64px;
+    border: 2px solid rgba(255,255,255,.9);
+    border-radius: 14px;
+    background: rgba(255,255,255,.94);
+    color: #111;
+    font-size: 25px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,.25);
+}
+#startMenu .menuButton:hover { transform: scale(1.04); }
+#countdownOverlay {
+    position: absolute;
+    inset: 0;
+    z-index: 140;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,.25);
+    pointer-events: none;
+}
+#countdownNumber {
+    font-size: clamp(90px, 18vw, 190px);
+    line-height: 1;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 5px 0 rgba(0,0,0,.25), 0 0 25px rgba(0,0,0,.45);
+}
+#gameTimer {
+    position: absolute;
+    top: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 30;
+    display: none;
+    min-width: 128px;
+    height: 54px;
+    padding: 6px 15px;
+    border-radius: 28px;
+    border: 3px solid rgba(255,255,255,.9);
+    background: rgba(0,0,0,.62);
+    color: #fff;
+    font-size: 27px;
+    font-weight: 900;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 14px rgba(0,0,0,.22);
+}
+#hourglassIcon {
+    display: inline-block;
+    font-size: 29px;
+    transform-origin: 50% 50%;
+    animation: hourglassWobble .75s ease-in-out infinite;
+}
+@keyframes hourglassWobble {
+    0%,100% { transform: rotate(-10deg); }
+    50% { transform: rotate(10deg); }
+}
+#gameTimer.warning {
+    border-color: #ff4545;
+    background: rgba(130,0,0,.72);
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div id="game">
+
+    <div id="startMenu">
+        <button id="menuPlay" class="menuButton" type="button">PLAY</button>
+        <a id="menuReturn" class="menuButton" href="maychu.html">RETURN</a>
+    </div>
+
+    <div id="countdownOverlay" aria-live="assertive">
+        <div id="countdownNumber">3</div>
+    </div>
+
+    <div id="gameTimer">
+        <span id="hourglassIcon">⏳</span>
+        <span id="timerText">30s</span>
+    </div>
+
+
+    <!-- =========================
+         ẢNH NỀN
+    ========================== -->
+
+    <img
+        id="backgroundImage"
+        alt="Background"
+    >
+
+
+    <div id="hud">
+
+        PRECISION THROW &nbsp;
+
+        <span id="score">
+            HITS: 0
+        </span>
+
+    </div>
+
+
+    <div id="status">
+        PRESS SPACE TO THROW
+    </div>
+
+
+    <!-- =========================
+         THANH LỰC
+    ========================== -->
+
+    <div id="meterWrap">
+
+        <div id="meter">
+
+            <div id="meterLines"></div>
+
+            <div id="strengthCursor"></div>
+
+        </div>
+
+
+        <div id="strengthText">
+            STRENGTH
+        </div>
+
+    </div>
+
+
+    <canvas id="canvas"></canvas>
+
+
+    <div id="aimHint">
+        Di chuột để ngắm
+    </div>
+
+
+    <div id="help">
+
+        <b>SPACE</b>
+        — Lock strength & throw
+
+        <br>
+
+        Move mouse cursor to aim
+
+        <br>
+
+        Every hit shrinks the target
+
+        <br>
+
+        <b>REACH 10 POINTS TO WIN</b>
+
+        <br>
+
+    </div>
+
+
+    <!-- =====================================================
+         MÀN HÌNH KẾT QUẢ
+    ====================================================== -->
+
+    <div id="result">
+
+
+        <!--
+            Dùng NGUYÊN PNG.
+
+            Không crop.
+            Không stretch.
+            Không tạo khung HTML.
+        -->
+
+        <img
+            id="resultScreenImage"
+            src="you_win_screen.png"
+            alt="Game Result"
+        >
+
+
+        <!-- =================================================
+             PLAY AGAIN
+
+             Chỉ là vùng click vô hình.
+             Chữ nằm trên PNG.
+        ================================================== -->
+
+        <button
+            id="restart"
+            type="button"
+            aria-label="Play Again">
+        </button>
+
+
+        <!-- =================================================
+             RETURN
+
+             Chỉ là vùng click vô hình.
+             Chữ nằm trên PNG.
+        ================================================== -->
+
+        <button
+            id="returnButton"
+            type="button"
+            aria-label="Return">
+        </button>
+
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+/* =========================================================
+   CẤU HÌNH ẢNH
+========================================================= */
+
+const IMAGE = {
+
+    background: "nen.png",
+
+    target: "dich.png",
+
+    ball: "game-4-1-19.png",
+
+    youWin: "you_win_screen.png",
+
+    youLose: "you_lose_screen.png"
+};
+
+
+/* =========================================================
+   KÍCH THƯỚC TARGET
+========================================================= */
+
+const TARGET_IMAGE_WIDTH = 144;
+const TARGET_IMAGE_HEIGHT = 144;
+
+const TARGET_IMAGE_SCALE = 1.0;
+
+
+/* =========================================================
+   KÍCH THƯỚC BÓNG
+========================================================= */
+
+const BALL_IMAGE_WIDTH = 100;
+const BALL_IMAGE_HEIGHT = 100;
+
+
+/* =========================================================
+   LOAD ẢNH
+========================================================= */
+
+function loadImageWithFolder(img, fileName) {
+
+    const candidates = [];
+
+    if (
+        fileName.startsWith("images/")
+    ) {
+
+        candidates.push(fileName);
+
+        candidates.push(
+            fileName.replace(
+                /^images\//,
+                ""
+            )
+        );
+
+    }
+
+    else {
+
+        candidates.push(
+            "images/" + fileName
+        );
+
+        candidates.push(fileName);
+
+    }
+
+
+    let current = 0;
+
+
+    function tryLoad() {
+
+        if (
+            current >=
+            candidates.length
+        ) {
+
+            console.error(
+                "Không tìm thấy ảnh:",
+                fileName
+            );
+
+            return;
+
+        }
+
+
+        img.src =
+            candidates[current];
+
+        current++;
+
+    }
+
+
+    img.onerror = function() {
+
+        tryLoad();
+
+    };
+
+
+    tryLoad();
+
+}
+
+
+/* =========================================================
+   ẢNH NỀN
+========================================================= */
+
+const backgroundImage =
+    document.getElementById(
+        "backgroundImage"
+    );
+
+
+loadImageWithFolder(
+    backgroundImage,
+    IMAGE.background
+);
+
+
+/* =========================================================
+   TARGET
+========================================================= */
+
+const targetImage =
+    new Image();
+
+
+targetImage.onload = function() {
+
+    console.log(
+        "Đã tải ảnh target:",
+        IMAGE.target
+    );
+
+};
+
+
+loadImageWithFolder(
+    targetImage,
+    IMAGE.target
+);
+
+
+/* =========================================================
+   BÓNG
+========================================================= */
+
+const ballImage =
+    new Image();
+
+
+ballImage.onload = function() {
+
+    console.log(
+        "Đã tải ảnh quả bóng:",
+        IMAGE.ball
+    );
+
+};
+
+
+loadImageWithFolder(
+    ballImage,
+    IMAGE.ball
+);
+
+
+/* =========================================================
+   ẢNH WIN / LOSE
+========================================================= */
+
+const resultScreenImage =
+    document.getElementById(
+        "resultScreenImage"
+    );
+
+
+loadImageWithFolder(
+    resultScreenImage,
+    IMAGE.youWin
+);
+
+
+/* =========================================================
+   KHỞI TẠO
+========================================================= */
+
+const canvas =
+    document.getElementById(
+        "canvas"
+    );
+
+const ctx =
+    canvas.getContext("2d");
+
+const game =
+    document.getElementById(
+        "game"
+    );
+
+const meter =
+    document.getElementById(
+        "meter"
+    );
+
+const strengthCursor =
+    document.getElementById(
+        "strengthCursor"
+    );
+
+const statusText =
+    document.getElementById(
+        "status"
+    );
+
+const aimHint =
+    document.getElementById(
+        "aimHint"
+    );
+
+const result =
+    document.getElementById(
+        "result"
+    );
+
+const restartBtn =
+    document.getElementById(
+        "restart"
+    );
+
+const returnBtn =
+    document.getElementById(
+        "returnButton"
+    );
+
+const scoreElement =
+    document.getElementById(
+        "score"
+    );
+
+
+/* =========================================================
+   GAME
+========================================================= */
+
+let W = 0;
+let H = 0;
+
+let running = false;
+let countdownActive = false;
+let countdownTimerId = null;
+let gameTimerId = null;
+let gameTimeLeft = 30;
+const GAME_TIME_LIMIT = 30;
+
+let thrown = false;
+
+let resultShown = false;
+
+let score = 0;
+
+
+/* =========================================================
+   THANH LỰC
+========================================================= */
+
+let strength = 0.5;
+
+let strengthDirection = 1;
+
+let strengthSpeed = 1.65;
+
+const strengthSpeedUp = 1.18;
+
+const maxStrengthSpeed = 6.0;
+
+
+/* =========================================================
+   BÓNG
+========================================================= */
+
+const ball = {
+
+    x: 0,
+
+    y: 0,
+
+    r: 18,
+
+    vx: 0,
+
+    vy: 0,
+
+    gravity: 780
+
+};
+
+
+/* =========================================================
+   TARGET
+========================================================= */
+
+const target = {
+
+    x: 0,
+
+    y: 0,
+
+    r: 72
+
+};
+
+
+const targetMinY = 110;
+
+let targetMaxY = 0;
+
+const minTargetRadius = 18;
+
+const shrinkAmount = 0.88;
+
+
+/* =========================================================
+   UFO
+========================================================= */
+
+const UFO_TIME_CHANCE = 1 / 1000;
+
+const UFO_CHECK_INTERVAL = 1.0;
+
+let ufoCheckTimer = 0;
+
+
+const ufo = {
+
+    active: false,
+
+    x: -150,
+
+    y: 0,
+
+    width: 110,
+
+    height: 48,
+
+    speed: 300,
+
+    direction: 1
+
+};
+
+
+/* =========================================================
+   CHUỘT
+========================================================= */
+
+let mouseX = 0;
+
+let mouseY = 0;
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+function resize() {
+
+    const dpr =
+        Math.min(
+            window.devicePixelRatio || 1,
+            2
+        );
+
+
+    W =
+        game.clientWidth;
+
+    H =
+        game.clientHeight;
+
+
+    canvas.width =
+        W * dpr;
+
+    canvas.height =
+        H * dpr;
+
+
+    canvas.style.width =
+        W + "px";
+
+    canvas.style.height =
+        H + "px";
+
+
+    ctx.setTransform(
+        dpr,
+        0,
+        0,
+        dpr,
+        0,
+        0
+    );
+
+
+    target.x =
+        W - 115;
+
+
+    targetMaxY =
+        Math.max(
+            targetMinY + 40,
+            H - 180
+        );
+
+
+    target.y =
+        Math.min(
+            Math.max(
+                target.y || H * .20,
+                targetMinY
+            ),
+            targetMaxY
+        );
+
+
+    if (!thrown) {
+
+        ball.x =
+            Math.max(
+                145,
+                W * .39
+            );
+
+        ball.y =
+            H - 72;
+
+    }
+
+
+    updateAimHint();
+
+}
+
+
+/* =========================================================
+   ĐỔI VỊ TRÍ TARGET
+========================================================= */
+
+function randomizeTargetPosition() {
+
+    targetMaxY =
+        Math.max(
+            targetMinY + 40,
+            H - 180
+        );
+
+
+    target.y =
+        targetMinY +
+
+        Math.random() *
+
+        (
+            targetMaxY -
+            targetMinY
+        );
+
+}
+
+
+/* =========================================================
+   UFO
+========================================================= */
+
+function trySpawnUFO() {
+
+    if (ufo.active) {
+        return;
+    }
+
+
+    if (
+        Math.random() <
+        UFO_TIME_CHANCE
+    ) {
+
+        ufo.active = true;
+
+
+        ufo.x =
+            -ufo.width - 50;
+
+
+        ufo.y =
+            100 +
+            Math.random() *
+            Math.max(
+                100,
+                H - 260
+            );
+
+
+        ufo.speed =
+            280 +
+            Math.random() * 180;
+
+
+        ufo.direction = 1;
+
+
+        statusText.textContent =
+            "!!! UFO !!!";
+
+    }
+
+}
+
+
+/* =========================================================
+   RESET UFO
+========================================================= */
+
+function resetUFO() {
+
+    ufo.active = false;
+
+    ufo.x =
+        -ufo.width - 100;
+
+}
+
+
+/* =========================================================
+   RESET GAME
+========================================================= */
+
+function resetGame() {
+
+    running = false;
+    countdownActive = false;
+    clearInterval(gameTimerId);
+    gameTimerId = null;
+    clearTimeout(countdownTimerId);
+    countdownTimerId = null;
+    gameTimeLeft = GAME_TIME_LIMIT;
+    updateGameTimer();
+
+    thrown = false;
+
+    resultShown = false;
+
+    score = 0;
+
+
+    scoreElement.textContent =
+        "HITS: 0";
+
+
+    target.r = 72;
+
+    target.y =
+        H * .20;
+
+
+    strengthSpeed = 1.65;
+
+    strength = 0.5;
+
+    strengthDirection = 1;
+
+
+    ufoCheckTimer = 0;
+
+    resetUFO();
+
+
+    /*
+       ẨN MÀN HÌNH KẾT QUẢ
+    */
+
+    result.style.display =
+        "none";
+
+
+    result.classList.remove(
+        "win",
+        "lose"
+    );
+
+
+    resultScreenImage.src =
+        IMAGE.youWin;
+
+
+    statusText.textContent =
+        "PRESS SPACE TO THROW";
+
+
+    ball.vx = 0;
+
+    ball.vy = 0;
+
+
+    ball.x =
+        Math.max(
+            145,
+            W * .39
+        );
+
+
+    ball.y =
+        H - 72;
+
+
+    resize();
+
+}
+
+
+/* =========================================================
+   AIM HINT
+========================================================= */
+
+function updateAimHint() {
+
+    aimHint.style.left =
+
+        Math.min(
+            W - 160,
+            Math.max(
+                150,
+                mouseX + 12
+            )
+        ) + "px";
+
+
+    aimHint.style.top =
+
+        Math.min(
+            H - 90,
+            Math.max(
+                90,
+                mouseY - 22
+            )
+        ) + "px";
+
+}
+
+
+/* =========================================================
+   GÓC NÉM
+========================================================= */
+
+function getAimAngle() {
+
+    return Math.atan2(
+
+        mouseY - ball.y,
+
+        mouseX - ball.x
+
+    );
+
+}
+
+
+/* =========================================================
+   MENU + COUNTDOWN
+========================================================= */
+
+const startMenu = document.getElementById("startMenu");
+const menuPlay = document.getElementById("menuPlay");
+const menuReturn = document.getElementById("menuReturn");
+const countdownOverlay = document.getElementById("countdownOverlay");
+const countdownNumber = document.getElementById("countdownNumber");
+const gameTimer = document.getElementById("gameTimer");
+const timerText = document.getElementById("timerText");
+
+function updateGameTimer() {
+    timerText.textContent = gameTimeLeft + "s";
+    gameTimer.classList.toggle("warning", gameTimeLeft <= 10);
+}
+
+function startGameTimer() {
+    clearInterval(gameTimerId);
+    gameTimeLeft = GAME_TIME_LIMIT;
+    updateGameTimer();
+    gameTimer.style.display = "flex";
+
+    gameTimerId = setInterval(function() {
+        if (!running) return;
+
+        gameTimeLeft--;
+        updateGameTimer();
+
+        if (gameTimeLeft <= 0) {
+            clearInterval(gameTimerId);
+            gameTimerId = null;
+            finish(false, "Hết thời gian!");
+        }
+    }, 1000);
+}
+
+function startCountdown() {
+    clearTimeout(countdownTimerId);
+    countdownActive = true;
+    running = false;
+
+    startMenu.style.display = "none";
+    gameTimer.style.display = "none";
+    countdownOverlay.style.display = "flex";
+
+    let count = 3;
+    countdownNumber.textContent = count;
+
+    function tick() {
+        count--;
+
+        if (count > 0) {
+            countdownNumber.textContent = count;
+            countdownTimerId = setTimeout(tick, 1000);
+        } else {
+            countdownNumber.textContent = "GO!";
+            countdownTimerId = setTimeout(function() {
+                countdownOverlay.style.display = "none";
+                countdownActive = false;
+                running = true;
+                startGameTimer();
+            }, 700);
+        }
+    }
+
+    countdownTimerId = setTimeout(tick, 1000);
+}
+
+function startNewGame() {
+    clearTimeout(countdownTimerId);
+    clearInterval(gameTimerId);
+    countdownTimerId = null;
+    gameTimerId = null;
+
+    resetGame();
+    startCountdown();
+}
+
+menuPlay.addEventListener("click", function(e) {
+    e.preventDefault();
+    startNewGame();
+});
+
+menuReturn.addEventListener("click", function(e) {
+    if (this.getAttribute("href") === "maychu.html") {
+        e.preventDefault();
+    }
+});
+
+/* =========================================================
+   NÉM BÓNG
+========================================================= */
+
+function throwBall() {
+
+    if (
+        !running ||
+        thrown ||
+        resultShown
+    ) {
+
+        return;
+
+    }
+
+
+    thrown = true;
+
+
+    const minPower = 480;
+
+    const maxPower = 1250;
+
+
+    const power =
+
+        minPower +
+
+        strength *
+
+        (
+            maxPower -
+            minPower
+        );
+
+
+    const angle =
+        getAimAngle();
+
+
+    ball.vx =
+        Math.cos(angle) *
+        power;
+
+
+    ball.vy =
+        Math.sin(angle) *
+        power;
+
+
+    if (!ufo.active) {
+
+        statusText.textContent =
+            "BALL IN FLIGHT";
+
+    }
+
+}
+
+
+/* =========================================================
+   KẾT THÚC GAME
+
+   WIN  → you_win_screen.png
+
+   LOSE → you_lose_screen.png
+========================================================= */
+
+function finish(win, message) {
+
+    if (resultShown) {
+        return;
+    }
+
+
+    resultShown = true;
+
+    running = false;
+    countdownActive = false;
+    clearInterval(gameTimerId);
+    gameTimerId = null;
+    clearTimeout(countdownTimerId);
+    countdownTimerId = null;
+    gameTimer.style.display = "none";
+    countdownOverlay.style.display = "none";
+
+
+    /*
+       Xóa class cũ
+    */
+
+    result.classList.remove(
+        "win",
+        "lose"
+    );
+
+
+    /*
+       CHỌN ẢNH
+    */
+
+    if (win) {
+
+        result.classList.add(
+            "win"
+        );
+
+
+        resultScreenImage.src =
+            IMAGE.youWin;
+
+
+        statusText.textContent =
+            "WIN!";
+
+    }
+
+    else {
+
+        result.classList.add(
+            "lose"
+        );
+
+
+        resultScreenImage.src =
+            IMAGE.youLose;
+
+
+        statusText.textContent =
+            "MISS!";
+
+    }
+
+
+    /*
+       Hiện overlay
+    */
+
+    result.style.display =
+        "block";
+
+}
+
+
+/* =========================================================
+   KIỂM TRA UFO
+========================================================= */
+
+function checkUFOCollision() {
+
+    if (!ufo.active) {
+        return false;
+    }
+
+
+    const dx =
+        ball.x -
+        ufo.x;
+
+
+    const dy =
+        ball.y -
+        ufo.y;
+
+
+    const distance =
+        Math.sqrt(
+            dx * dx +
+            dy * dy
+        );
+
+
+    const collisionRadius = 60;
+
+
+    return (
+        distance <=
+        collisionRadius
+    );
+
+}
+
+
+/* =========================================================
+   UPDATE GAME
+========================================================= */
+
+function update(dt) {
+
+    if (!running) {
+        return;
+    }
+
+
+    /*
+       UFO
+    */
+
+    ufoCheckTimer += dt;
+
+
+    if (
+        ufoCheckTimer >=
+        UFO_CHECK_INTERVAL
+    ) {
+
+        ufoCheckTimer = 0;
+
+        trySpawnUFO();
+
+    }
+
+
+    /*
+       UFO BAY
+    */
+
+    if (ufo.active) {
+
+        ufo.x +=
+            ufo.speed * dt;
+
+
+        if (
+            ufo.x >
+            W + ufo.width + 100
+        ) {
+
+            resetUFO();
+
+
+            if (!thrown) {
+
+                statusText.textContent =
+                    "PRESS SPACE TO THROW";
+
+            }
+
+        }
+
+    }
+
+
+    /*
+       CHƯA NÉM
+    */
+
+    if (!thrown) {
+
+        strength +=
+
+            strengthDirection *
+            strengthSpeed *
+            dt;
+
+
+        if (strength >= 1) {
+
+            strength = 1;
+
+            strengthDirection = -1;
+
+        }
+
+        else if (strength <= 0) {
+
+            strength = 0;
+
+            strengthDirection = 1;
+
+        }
+
+
+        const meterH =
+            meter.clientHeight;
+
+
+        strengthCursor.style.top =
+
+            (
+                (1 - strength) *
+                meterH
+            ) + "px";
+
+    }
+
+
+    /*
+       BÓNG BAY
+    */
+
+    else {
+
+        ball.vy +=
+            ball.gravity * dt;
+
+
+        ball.x +=
+            ball.vx * dt;
+
+
+        ball.y +=
+            ball.vy * dt;
+
+
+        /*
+           UFO
+        */
+
+        if (
+            ufo.active &&
+            checkUFOCollision()
+        ) {
+
+            resetUFO();
+
+
+            finish(
+                true,
+                "BẠN ĐÃ BẮN TRÚNG EASTER EGG"
+            );
+
+
+            return;
+
+        }
+
+
+        /*
+           TARGET
+        */
+
+        const dx =
+            ball.x -
+            target.x;
+
+
+        const dy =
+            ball.y -
+            target.y;
+
+
+        const distance =
+            Math.sqrt(
+                dx * dx +
+                dy * dy
+            );
+
+
+        if (
+            distance <=
+            target.r +
+            ball.r
+        ) {
+
+            score++;
+
+
+            scoreElement.textContent =
+                "HITS: " + score;
+
+
+            /*
+               WIN
+            */
+
+            if (score >= 10) {
+
+                finish(
+                    true,
+                    "Bạn đã đạt 10 điểm và chiến thắng!"
+                );
+
+
+                return;
+
+            }
+
+
+            /*
+               TARGET NHỎ LẠI
+            */
+
+            target.r =
+                Math.max(
+                    minTargetRadius,
+                    target.r *
+                    shrinkAmount
+                );
+
+
+            /*
+               ĐỔI VỊ TRÍ
+            */
+
+            randomizeTargetPosition();
+
+
+            /*
+               TĂNG TỐC
+            */
+
+            strengthSpeed =
+                Math.min(
+                    maxStrengthSpeed,
+                    strengthSpeed *
+                    strengthSpeedUp
+                );
+
+
+            /*
+               LƯỢT MỚI
+            */
+
+            thrown = false;
+
+            ball.vx = 0;
+
+            ball.vy = 0;
+
+
+            ball.x =
+                Math.max(
+                    145,
+                    W * .39
+                );
+
+
+            ball.y =
+                H - 72;
+
+
+            strength = 0.5;
+
+            strengthDirection = 1;
+
+
+            statusText.textContent =
+                "NEW TARGET! PRESS SPACE";
+
+
+            return;
+
+        }
+
+
+        /*
+           RA NGOÀI
+        */
+
+        if (
+
+            ball.x >
+                W + 100 ||
+
+            ball.x <
+                -100 ||
+
+            ball.y >
+                H + 100 ||
+
+            ball.y <
+                -100
+
+        ) {
+
+            resetUFO();
+
+
+            finish(
+                false,
+                "Bóng không chạm mục tiêu. Hãy thử lại."
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   VẼ NỀN + TARGET
+========================================================= */
+
+function drawBackgroundDecor() {
+
+    ctx.save();
+
+
+    ctx.strokeStyle =
+        "#D4E157";
+
+    ctx.lineWidth = 9;
+
+
+    ctx.beginPath();
+
+    ctx.arc(
+
+        target.x,
+
+        target.y,
+
+        target.r,
+
+        0,
+
+        Math.PI * 2
+
+    );
+
+    ctx.stroke();
+
+
+    /*
+       CHÂN TARGET
+    */
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+
+        target.x,
+
+        target.y +
+        target.r
+
+    );
+
+
+    ctx.lineTo(
+
+        target.x,
+
+        H - 20
+
+    );
+
+    ctx.stroke();
+
+
+    /*
+       VÒNG TRONG
+    */
+
+    ctx.lineWidth = 2;
+
+
+    ctx.beginPath();
+
+    ctx.arc(
+
+        target.x,
+
+        target.y,
+
+        Math.max(
+            4,
+            target.r - 10
+        ),
+
+        0,
+
+        Math.PI * 2
+
+    );
+
+    ctx.stroke();
+
+
+    /*
+       ẢNH TARGET
+    */
+
+    if (
+        targetImage.complete &&
+        targetImage.naturalWidth > 0
+    ) {
+
+        const visualScale =
+
+            (
+                target.r / 72
+            ) *
+
+            TARGET_IMAGE_SCALE;
+
+
+        const imageWidth =
+
+            TARGET_IMAGE_WIDTH *
+            visualScale;
+
+
+        const imageHeight =
+
+            TARGET_IMAGE_HEIGHT *
+            visualScale;
+
+
+        ctx.drawImage(
+
+            targetImage,
+
+            target.x -
+                imageWidth / 2,
+
+            target.y -
+                imageHeight / 2,
+
+            imageWidth,
+
+            imageHeight
+
+        );
+
+    }
+
+
+    /*
+       CHẤM TRANG TRÍ
+    */
+
+    ctx.fillStyle =
+        "rgba(100,70,70,.40)";
+
+
+    const dots = [
+
+        [W * .52, H * .30, 13],
+
+        [W * .44, H * .45, 17],
+
+        [W * .40, H * .68, 24],
+
+        [W * .61, H * .16, 6],
+
+        [W * .71, H * .18, 4]
+
+    ];
+
+
+    dots.forEach(d => {
+
+        ctx.beginPath();
+
+        ctx.arc(
+
+            d[0],
+            d[1],
+            d[2],
+            0,
+            Math.PI * 2
+
+        );
+
+        ctx.fill();
+
+    });
+
+
+    ctx.restore();
+
+}
+
+
+/* =========================================================
+   VẼ UFO
+========================================================= */
+
+function drawUFO() {
+
+    if (!ufo.active) {
+        return;
+    }
+
+
+    ctx.save();
+
+
+    ctx.shadowBlur = 18;
+
+    ctx.shadowColor =
+        "rgba(80,200,255,.8)";
+
+
+    ctx.fillStyle =
+        "rgba(70,75,90,.95)";
+
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+
+        ufo.x,
+
+        ufo.y + 8,
+
+        55,
+
+        18,
+
+        0,
+
+        0,
+
+        Math.PI * 2
+
+    );
+
+    ctx.fill();
+
+
+    ctx.fillStyle =
+        "rgba(130,220,255,.9)";
+
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+
+        ufo.x,
+
+        ufo.y - 3,
+
+        28,
+
+        17,
+
+        0,
+
+        Math.PI,
+
+        Math.PI * 2
+
+    );
+
+    ctx.fill();
+
+
+    ctx.shadowBlur = 8;
+
+    ctx.shadowColor =
+        "rgba(255,255,255,.9)";
+
+
+    ctx.fillStyle =
+        "rgba(255,255,255,.95)";
+
+
+    const lights = [
+
+        -35,
+        -18,
+        0,
+        18,
+        35
+
+    ];
+
+
+    lights.forEach(offset => {
+
+        ctx.beginPath();
+
+        ctx.arc(
+
+            ufo.x + offset,
+
+            ufo.y + 12,
+
+            4,
+
+            0,
+
+            Math.PI * 2
+
+        );
+
+        ctx.fill();
+
+    });
+
+
+    ctx.shadowBlur = 0;
+
+
+    ctx.fillStyle =
+        "rgba(20,20,20,.8)";
+
+
+    ctx.font =
+        "bold 10px Arial";
+
+
+    ctx.textAlign =
+        "center";
+
+
+    ctx.fillText(
+
+        "UFO",
+
+        ufo.x,
+
+        ufo.y + 2
+
+    );
+
+
+    ctx.restore();
+
+}
+
+
+/* =========================================================
+   QUỸ ĐẠO
+========================================================= */
+
+function drawAimLine() {
+
+    if (
+        thrown ||
+        !running
+    ) {
+
+        return;
+
+    }
+
+
+    const angle =
+        getAimAngle();
+
+
+    const minPower = 480;
+
+    const maxPower = 1250;
+
+
+    const power =
+
+        minPower +
+
+        strength *
+
+        (
+            maxPower -
+            minPower
+        );
+
+
+    const vx =
+        Math.cos(angle) *
+        power;
+
+
+    const vy =
+        Math.sin(angle) *
+        power;
+
+
+    ctx.save();
+
+
+    ctx.setLineDash([
+        7,
+        9
+    ]);
+
+
+    ctx.strokeStyle =
+        "rgba(20,20,20,.40)";
+
+
+    ctx.lineWidth = 2;
+
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+        ball.x,
+        ball.y
+    );
+
+
+    const trajectoryLength = 125;
+
+    const dtStep = .035;
+
+
+    const horizontalSpeed =
+        Math.abs(vx);
+
+
+    const maxTime =
+
+        horizontalSpeed > 1
+
+            ? trajectoryLength /
+              horizontalSpeed
+
+            : .16;
+
+
+    for (
+
+        let t = dtStep;
+
+        t <= maxTime;
+
+        t += dtStep
+
+    ) {
+
+        const px =
+
+            ball.x +
+            vx * t;
+
+
+        const py =
+
+            ball.y +
+            vy * t +
+
+            .5 *
+            ball.gravity *
+            t *
+            t;
+
+
+        if (
+
+            px < -30 ||
+
+            px > W + 40 ||
+
+            py < -30 ||
+
+            py > H + 40
+
+        ) {
+
+            break;
+
+        }
+
+
+        ctx.lineTo(
+            px,
+            py
+        );
+
+    }
+
+
+    ctx.stroke();
+
+    ctx.restore();
+
+}
+
+
+/* =========================================================
+   VẼ BÓNG
+========================================================= */
+
+function drawBall() {
+
+    ctx.save();
+
+
+    if (
+        ballImage.complete &&
+        ballImage.naturalWidth > 0
+    ) {
+
+        ctx.drawImage(
+
+            ballImage,
+
+            ball.x -
+                BALL_IMAGE_WIDTH / 2,
+
+            ball.y -
+                BALL_IMAGE_HEIGHT / 2,
+
+            BALL_IMAGE_WIDTH,
+
+            BALL_IMAGE_HEIGHT
+
+        );
+
+    }
+
+    else {
+
+        ctx.fillStyle =
+            "rgba(255,255,255,.88)";
+
+
+        ctx.beginPath();
+
+        ctx.arc(
+
+            ball.x,
+
+            ball.y,
+
+            ball.r,
+
+            0,
+
+            Math.PI * 2
+
+        );
+
+        ctx.fill();
+
+
+        ctx.strokeStyle =
+            "rgba(0,0,0,.45)";
+
+
+        ctx.lineWidth = 2;
+
+        ctx.stroke();
+
+    }
+
+
+    ctx.restore();
+
+}
+
+
+/* =========================================================
+   DRAW
+========================================================= */
+
+function draw() {
+
+    ctx.clearRect(
+        0,
+        0,
+        W,
+        H
+    );
+
+
+    drawBackgroundDecor();
+
+    drawUFO();
+
+    drawAimLine();
+
+    drawBall();
+
+}
+
+
+/* =========================================================
+   GAME LOOP
+========================================================= */
+
+let lastTime =
+    performance.now();
+
+
+function loop(now) {
+
+    const dt =
+
+        Math.min(
+
+            (now - lastTime) / 1000,
+
+            .033
+
+        );
+
+
+    lastTime = now;
+
+
+    update(dt);
+
+    draw();
+
+
+    requestAnimationFrame(
+        loop
+    );
+
+}
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+window.addEventListener(
+    "resize",
+    resize
+);
+
+
+/* =========================================================
+   MOUSE
+========================================================= */
+
+game.addEventListener(
+
+    "mousemove",
+
+    e => {
+
+        const rect =
+            game.getBoundingClientRect();
+
+
+        mouseX =
+            e.clientX -
+            rect.left;
+
+
+        mouseY =
+            e.clientY -
+            rect.top;
+
+
+        updateAimHint();
+
+    }
+
+);
+
+
+/* =========================================================
+   KEYBOARD
+========================================================= */
+
+window.addEventListener(
+
+    "keydown",
+
+    e => {
+
+        if (
+            e.code === "Space"
+        ) {
+
+            e.preventDefault();
+
+            throwBall();
+
+        }
+
+
+        if (
+
+            e.code === "Enter" &&
+
+            resultShown
+
+        ) {
+
+            startNewGame();
+
+        }
+
+    }
+
+);
+
+
+/* =========================================================
+   PLAY AGAIN
+========================================================= */
+
+restartBtn.addEventListener(
+
+    "click",
+
+    function(e) {
+
+        e.preventDefault();
+
+        e.stopPropagation();
+
+        startNewGame();
+
+    }
+
+);
+
+
+/* =========================================================
+   RETURN
+========================================================= */
+
+returnBtn.addEventListener(
+
+    "click",
+
+    function(e) {
+
+        e.preventDefault();
+
+        e.stopPropagation();
+
+
+        /*
+           Quay lại trang trước
+        */
+
+        if (
+            window.history.length > 1
+        ) {
+
+            window.history.back();
+
+        }
+
+        else {
+
+            window.location.href =
+                "maychu.html";
+
+        }
+
+    }
+
+);
+
+
+/* =========================================================
+   START GAME
+========================================================= */
+
+resize();
+
+
+mouseX =
+    W - 180;
+
+
+mouseY =
+    H * .35;
+
+
+updateAimHint();
+updateGameTimer();
+
+startMenu.style.display = "flex";
+countdownOverlay.style.display = "none";
+gameTimer.style.display = "none";
+
+requestAnimationFrame(
+    loop
+);
+
+</script>
+
+</body>
+
+</html>
